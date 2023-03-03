@@ -1,0 +1,10 @@
+{
+    "name": "@cifra/database",
+    "license": "UNLICENSED",
+    "version": "1.0.0",
+    "scripts": {
+        "database:up": "docker compose -f ./docker-compose.yml --env-file ../../.env up -d",
+        "database:stop": "docker compose -f ./docker-compose.yml --env-file ../../.env down",
+        "database:start": "yarn database:stop && yarn database:up"
+    }
+}
