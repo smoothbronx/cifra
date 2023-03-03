@@ -18,8 +18,5 @@
     "workspaces": [
         "apps/*"
     ],
-    "dependencies": {
-        "eslint": "^8.35.0",
-        "yarn": "^1.22.19"
-    }
+    "dependencies": {}
 }
