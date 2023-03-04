@@ -25,8 +25,6 @@ import * as Joi from 'joi';
                 POSTGRES_USERNAME: Joi.string(),
                 POSTGRES_PASSWORD: Joi.string(),
                 POSTGRES_DATABASE: Joi.string(),
-                REDIS_HOST: Joi.string(),
-                REDIS_PORT: Joi.number(),
             }),
         }),
         TypeOrmModule.forRootAsync({
