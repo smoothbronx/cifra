@@ -37,7 +37,6 @@ export class UserEntity extends BaseEntity {
     @JoinColumn({ name: 'branch_id' })
     public branch: BranchEntity;
 
-    @Exclude({ toPlainOnly: true })
     @Column({ nullable: false, enum: Role, name: 'role' })
     public role: Role;
 
