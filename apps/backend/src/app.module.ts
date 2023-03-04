@@ -25,6 +25,8 @@ import * as Joi from 'joi';
                 POSTGRES_USERNAME: Joi.string(),
                 POSTGRES_PASSWORD: Joi.string(),
                 POSTGRES_DATABASE: Joi.string(),
+                REDIS_HOST: Joi.string(),
+                REDIS_PORT: Joi.number(),
             }),
         }),
         TypeOrmModule.forRootAsync({
@@ -45,6 +47,14 @@ import * as Joi from 'joi';
                 entities: [UserEntity, PostEntity, BranchEntity],
                 autoLoadEntities: true,
                 synchronize: true,
+                cache: {
+                    type: 'redis',
+                    options: {
+                        host: configService.getOrThrow('REDIS_HOST'),
+                        port: configService.getOrThrow<number>('REDIS_PORT')
+                    },
+                    ignoreErrors: true,
+                }
             }),
         }),
         BranchesModule,

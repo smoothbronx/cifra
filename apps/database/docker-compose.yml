@@ -10,9 +10,15 @@ services:
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
             - POSTGRES_PORT=${POSTGRES_PORT}
         volumes:
-            - /var/lib/uniscope-postgres/dev/postgresql/data:/var/lib/postgresql/data
-        ports:
-            - ${POSTGRES_PORT}:${POSTGRES_PORT}
+            - /data/postgres/:/var/lib/postgresql/data
+        # ports:
+        #     - ${POSTGRES_PORT}:${POSTGRES_PORT}
 
-networks:
-    backend:
+    redis:
+        container_name: cifra-redis
+        image: "redis:alpine"
+        restart: always
+        volumes:
+            - /data/redis/:/data
+        # ports:
+        #     - "${REDIS_PORT}:${REDIS_PORT}"
