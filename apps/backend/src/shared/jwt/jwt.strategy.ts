@@ -19,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         });
     }
 
-    public async validate(payload: TokenPayload): Promise<UserEntity> {
+    public validate(payload: TokenPayload): Promise<UserEntity> {
         if (payload.type !== 'access') throw new UnauthorizedException();
         try {
             return this.usersService.getUserByLogin(payload.login);

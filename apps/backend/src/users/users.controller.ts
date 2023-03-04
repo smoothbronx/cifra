@@ -22,6 +22,7 @@ import {
     Get,
 } from '@nestjs/common';
 import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
+import { AuthUser } from '@/shared/decorators/authUser.decorator';
 
 @ApiHeader({
     name: 'Authorization',
@@ -37,6 +38,17 @@ import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException
 @UseGuards(JwtAuthGuard)
 export class UsersController {
     constructor(private readonly userService: UsersService) {}
+
+    @ApiOkResponse({
+        description: 'Return current user (user in validated jwt token)',
+        type: UserDto,
+    })
+    @Get('/user/')
+    public async getCurrentUser(
+        @AuthUser() user: UserEntity,
+    ): Promise<UserEntity> {
+        return user;
+    }
 
     @ApiOkResponse({
         description: 'Returns user',
