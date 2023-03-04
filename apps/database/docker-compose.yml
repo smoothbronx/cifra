@@ -13,3 +13,6 @@ services:
             - /data/postgres/:/var/lib/postgresql/data
         ports:
             - ${POSTGRES_PORT}:${POSTGRES_PORT}
+
+networks:
+    backend:
