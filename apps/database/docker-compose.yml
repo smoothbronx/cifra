@@ -11,8 +11,8 @@ services:
             - POSTGRES_PORT=${POSTGRES_PORT}
         volumes:
             - /data/postgres/:/var/lib/postgresql/data
-        # ports:
-        #     - ${POSTGRES_PORT}:${POSTGRES_PORT}
+        ports:
+            - ${POSTGRES_PORT}:${POSTGRES_PORT}
 
     redis:
         container_name: cifra-redis
@@ -20,5 +20,5 @@ services:
         restart: always
         volumes:
             - /data/redis/:/data
-        # ports:
-        #     - "${REDIS_PORT}:${REDIS_PORT}"
+        ports:
+            - "${REDIS_PORT}:${REDIS_PORT}"
