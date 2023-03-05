@@ -12,7 +12,7 @@ import {
 @Entity({ name: 'branches' })
 export class BranchEntity extends BaseEntity {
     @PrimaryGeneratedColumn({ name: 'id' })
-    public id: number;
+    public code: number;
 
     @Column({ nullable: false, name: 'name' })
     public name: string;

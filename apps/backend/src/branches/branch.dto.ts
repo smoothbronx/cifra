@@ -3,7 +3,7 @@ import { IsString } from 'class-validator';
 
 export class BranchDto {
     @ApiProperty({ required: true, readOnly: true })
-    public readonly id: number;
+    public readonly code: number;
 
     @IsString()
     @ApiProperty({ required: true, example: 'Калининград' })

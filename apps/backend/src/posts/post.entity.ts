@@ -12,7 +12,7 @@ import {
 @Entity({ name: 'posts' })
 export class PostEntity extends BaseEntity {
     @PrimaryGeneratedColumn({ name: 'id' })
-    public id: number;
+    public code: number;
 
     @Column({ nullable: false, name: 'name' })
     public name: string;
