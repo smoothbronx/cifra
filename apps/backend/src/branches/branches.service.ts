@@ -19,8 +19,8 @@ export class BranchesService {
         return this.branchesRepository.find();
     }
 
-    public getBranch(branchId: number): Promise<BranchEntity> {
-        return this.getBranchByIdOrFall(branchId);
+    public getBranch(branchCode: number): Promise<BranchEntity> {
+        return this.getBranchByIdOrFall(branchCode);
     }
 
     public async createBranch(branchDto: BranchDto): Promise<void> {
@@ -34,22 +34,22 @@ export class BranchesService {
         await this.branchesRepository.save(newBranch);
     }
 
-    public async deleteBranch(branchId: number): Promise<void> {
-        await this.getBranchByIdOrFall(branchId);
-        await this.branchesRepository.delete({ id: branchId });
+    public async deleteBranch(branchCode: number): Promise<void> {
+        await this.getBranchByIdOrFall(branchCode);
+        await this.branchesRepository.delete({ code: branchCode });
     }
 
     public async updateBranch(
-        branchId: number,
+        branchCode: number,
         branchDto: BranchDto,
     ): Promise<void> {
-        await this.getBranchByIdOrFall(branchId);
-        await this.branchesRepository.update({ id: branchId }, branchDto);
+        await this.getBranchByIdOrFall(branchCode);
+        await this.branchesRepository.update({ code: branchCode }, branchDto);
     }
 
-    private async getBranchByIdOrFall(id: number): Promise<BranchEntity> {
+    private async getBranchByIdOrFall(code: number): Promise<BranchEntity> {
         const branch = await this.branchesRepository.findOneBy({
-            id,
+            code,
         });
 
         if (!branch) throw new NotFoundException('Branch not found');

@@ -19,8 +19,8 @@ export class PostsService {
         return this.postsRepository.find();
     }
 
-    public getPost(postId: number): Promise<PostEntity> {
-        return this.getPostByIdOrFall(postId);
+    public getPost(postCode: number): Promise<PostEntity> {
+        return this.getPostByIdOrFall(postCode);
     }
 
     public async createPost(postDto: PostDto): Promise<void> {
@@ -33,18 +33,18 @@ export class PostsService {
         await this.postsRepository.save(newPost);
     }
 
-    public async deletePost(postId: number): Promise<void> {
-        await this.getPostByIdOrFall(postId);
-        await this.postsRepository.delete(postId);
+    public async deletePost(postCode: number): Promise<void> {
+        await this.getPostByIdOrFall(postCode);
+        await this.postsRepository.delete(postCode);
     }
 
-    public async updatePost(postId: number, postDto: PostDto): Promise<void> {
-        await this.getPostByIdOrFall(postId);
-        await this.postsRepository.update({ id: postId }, postDto);
+    public async updatePost(postCode: number, postDto: PostDto): Promise<void> {
+        await this.getPostByIdOrFall(postCode);
+        await this.postsRepository.update({ code: postCode }, postDto);
     }
 
-    private async getPostByIdOrFall(id: number): Promise<PostEntity> {
-        const post = await this.postsRepository.findOneBy({ id });
+    private async getPostByIdOrFall(code: number): Promise<PostEntity> {
+        const post = await this.postsRepository.findOneBy({ code });
         if (!post) throw new NotFoundException('Post not found');
         return post;
     }
