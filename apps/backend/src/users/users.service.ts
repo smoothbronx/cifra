@@ -105,10 +105,10 @@ export class UsersService {
     public async getFilteredUsers(filterDto: FilterDto): Promise<UserEntity[]> {
         const filteredUsers: UserEntity[] = await this.usersRepository.findBy({
             branch: filterDto.branches
-                ? Any(filterDto.branches.map((branch) => branch.name))
+                ? Any(filterDto.branches.map((branch) => branch.code))
                 : undefined,
             post: filterDto.posts
-                ? Any(filterDto.posts.map((post) => post.name))
+                ? Any(filterDto.posts.map((post) => post.code))
                 : undefined,
         });
 
