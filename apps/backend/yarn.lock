@@ -678,6 +678,11 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
+"@nanogiants/nestjs-swagger-api-exception-decorator@^1.6.5":
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/@nanogiants/nestjs-swagger-api-exception-decorator/-/nestjs-swagger-api-exception-decorator-1.6.5.tgz#0247ac53e7017ba0d27545467d9cd24559ba7949"
+  integrity sha512-Ob/4mZTZqE3Do9BBi9bkvWERxaCHH3DNoaEFtmvNnNUGE2iVvcKwNzrTISfV3KMB1K1zhc1NWQUG5XAz06jsMg==
+
 "@nestjs/cli@^8.0.0":
   version "8.2.8"
   resolved "https://registry.npmjs.org/@nestjs/cli/-/cli-8.2.8.tgz"

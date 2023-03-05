@@ -1,27 +1,45 @@
+// eslint-disable-next-line import/no-default-export
 module.exports = {
-    parser: '@typescript-eslint/parser',
-    parserOptions: {
-        project: 'tsconfig.json',
-        tsconfigRootDir: __dirname,
-        sourceType: 'module',
-    },
-    plugins: ['@typescript-eslint/eslint-plugin', 'prettier'],
-    extends: [
-        'plugin:@typescript-eslint/recommended',
-        'plugin:prettier/recommended',
-        'prettier',
-    ],
-    root: true,
     env: {
         node: true,
-        jest: true,
     },
-    ignorePatterns: ['.eslintrc.js'],
+    root: true,
+    plugins: ['prettier', '@typescript-eslint/eslint-plugin'],
+    extends: [
+        // JS base
+        'eslint:recommended',
+        // TS
+        'plugin:@typescript-eslint/recommended',
+        // Prettier
+        'prettier',
+    ],
     rules: {
-        '@typescript-eslint/interface-name-prefix': 'off',
-        '@typescript-eslint/explicit-function-return-type': 'off',
-        '@typescript-eslint/explicit-module-boundary-types': 'off',
+        '@typescript-eslint/explicit-member-accessibility': [
+            'error',
+            {
+                accessibility: 'explicit',
+                overrides: {
+                    accessors: 'explicit',
+                    constructors: 'no-public',
+                    methods: 'explicit',
+                    properties: 'off',
+                    parameterProperties: 'explicit',
+                },
+            },
+        ],
         '@typescript-eslint/no-explicit-any': 'off',
-        'prettier/prettier': ['error'],
+        // == and != restrictions
+        eqeqeq: 1,
+        // Production rules
+        'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+        // Comment formatting
+        'spaced-comment': ['error', 'always', { exceptions: ['-', '+'] }],
+        // Fixing false positive end of line error after git
+        'prettier/prettier': [
+            'error',
+            {
+                endOfLine: 'auto',
+            },
+        ],
     },
 };

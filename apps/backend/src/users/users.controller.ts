@@ -1,15 +1,21 @@
+import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
+import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
+import { AuthUser } from '@/shared/decorators/authUser.decorator';
 import { JwtAuthGuard } from '@/shared/jwt/jwt.guard';
 import { UsersService } from '@/users/users.service';
 import { FilterDto } from '@/users/dto/filter.dto';
 import { UserEntity } from '@/users/user.entity';
 import { UserDto } from '@/users/dto/user.dto';
 import {
-    ApiHeader,
-    ApiOkResponse,
-    ApiTags,
     ApiUnauthorizedResponse,
+    ApiNoContentResponse,
+    ApiBearerAuth,
+    ApiOkResponse,
+    ApiHeader,
+    ApiTags,
 } from '@nestjs/swagger';
 import {
+    NotFoundException,
     ParseIntPipe,
     Controller,
     UseGuards,
@@ -21,14 +27,13 @@ import {
     Post,
     Get,
 } from '@nestjs/common';
-import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
-import { AuthUser } from '@/shared/decorators/authUser.decorator';
 
 @ApiHeader({
     name: 'Authorization',
     description: 'Bearer access token',
     required: true,
 })
+@ApiBearerAuth('AccessTokenAuth')
 @ApiUnauthorizedResponse({
     description: 'Invalid access token',
     type: InvalidJwtExceptionSchema,
@@ -53,6 +58,9 @@ export class UsersController {
     @ApiOkResponse({
         description: 'Returns user',
         type: UserDto,
+    })
+    @ApiException(() => new NotFoundException('User not found'), {
+        description: 'The user was not found',
     })
     @Get('/:id/')
     public async getUser(
@@ -85,6 +93,10 @@ export class UsersController {
 
     @HttpCode(204)
     @Patch('/:id/')
+    @ApiNoContentResponse({ description: 'The user update was successful' })
+    @ApiException(() => new NotFoundException('User not found'), {
+        description: 'The user being update was not found',
+    })
     public async updateUser(
         @Param('id', ParseIntPipe) userId: number,
         userDto: UserDto,
@@ -94,6 +106,10 @@ export class UsersController {
 
     @HttpCode(204)
     @Delete('/:id/')
+    @ApiNoContentResponse({ description: 'The user deletion was successful' })
+    @ApiException(() => new NotFoundException('User not found'), {
+        description: 'The user being deleted was not found',
+    })
     public async deleteUser(
         @Param('id', ParseIntPipe) userId: number,
     ): Promise<void> {
