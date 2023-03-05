@@ -49,10 +49,10 @@ export class UsersService {
         admin.lastEntry = (Date.now() / 1000) | 0;
 
         const posts = await this.postsRepository.find();
-        admin.post = posts.at(0) as PostEntity;
+        admin.post = posts[2];
 
         const branches = await this.branchesRepository.find();
-        admin.branch = branches.at(0) as BranchEntity;
+        admin.branch = branches[2];
 
         await this.usersRepository.save(admin);
     }
@@ -77,10 +77,10 @@ export class UsersService {
         moderator.lastEntry = (Date.now() / 1000) | 0;
 
         const posts = await this.postsRepository.find();
-        moderator.post = posts.at(-1) as PostEntity;
+        moderator.post = posts[0];
 
         const branches = await this.branchesRepository.find();
-        moderator.branch = branches.at(-1) as BranchEntity;
+        moderator.branch = branches[0];
 
         await this.usersRepository.save(moderator);
     }
