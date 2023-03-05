@@ -1,19 +1,19 @@
 import {
     ConflictException,
-    Inject,
-    Injectable,
     NotFoundException,
+    Injectable,
+    Inject,
 } from '@nestjs/common';
 import { CryptoService } from '@/shared/crypto/crypto.service';
 import { BranchEntity } from '@/branches/branch.entity';
-import { UserEntity } from '@/users/user.entity';
-import { PostEntity } from '@/posts/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FilterDto } from '@/users/dto/filter.dto';
-import { UserDto } from '@/users/dto/user.dto';
-import { Any, Repository } from 'typeorm';
+import { UserEntity } from '@/users/user.entity';
+import { PostEntity } from '@/posts/post.entity';
 import { Role } from '@/shared/enums/Role.enum';
+import { UserDto } from '@/users/dto/user.dto';
 import { ConfigService } from '@nestjs/config';
+import { Any, Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
