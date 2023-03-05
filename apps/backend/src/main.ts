@@ -20,6 +20,10 @@ async function bootstrap() {
         }),
     );
 
+    application.enableCors({
+        origin: 'http://localhost:3000',
+    });
+
     await application.listen(4000);
 }
 
