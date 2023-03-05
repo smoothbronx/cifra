@@ -28,7 +28,6 @@ export class FilterDto {
         required: false,
         name: 'posts',
         description: 'Список фильтрации пользователей по должности',
-        example: ['Уборщик', 'Менеджер'],
     })
     posts?: DropdownItemDto[];
 
@@ -40,7 +39,6 @@ export class FilterDto {
         required: false,
         name: 'branches',
         description: 'Список фильтрации пользователей по филиалу',
-        example: ['Калининград', 'Москва'],
     })
     branches?: DropdownItemDto[];
 }
