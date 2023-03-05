@@ -48,6 +48,12 @@ export class UsersService {
         admin.lastName = 'Admin';
         admin.lastEntry = (Date.now() / 1000) | 0;
 
+        const posts = await this.postsRepository.find();
+        admin.post = posts.at(0) as PostEntity;
+
+        const branches = await this.branchesRepository.find();
+        admin.branch = branches.at(0) as BranchEntity;
+
         await this.usersRepository.save(admin);
     }
 
@@ -69,6 +75,12 @@ export class UsersService {
         moderator.firstName = 'Editor';
         moderator.lastName = 'Editor';
         moderator.lastEntry = (Date.now() / 1000) | 0;
+
+        const posts = await this.postsRepository.find();
+        moderator.post = posts.at(-1) as PostEntity;
+
+        const branches = await this.branchesRepository.find();
+        moderator.branch = branches.at(-1) as BranchEntity;
 
         await this.usersRepository.save(moderator);
     }
@@ -101,7 +113,7 @@ export class UsersService {
         });
 
         const nameSegments = filterDto.name?.split(' ') || [];
-        if (nameSegments.length == 0) return filteredUsers;
+        if (nameSegments.length === 0) return filteredUsers;
         return filteredUsers.filter((user) =>
             nameSegments.every((segment) =>
                 user.getFullName().includes(segment),

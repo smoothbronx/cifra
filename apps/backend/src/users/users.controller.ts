@@ -103,6 +103,9 @@ export class UsersController {
     @ApiException(() => new NotFoundException('User not found'), {
         description: 'The user being update was not found',
     })
+    @ApiBody({
+        type: UserDto,
+    })
     public async updateUser(
         @Param('id', ParseIntPipe) userId: number,
         userDto: UserDto,
