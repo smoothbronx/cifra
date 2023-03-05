@@ -7,7 +7,7 @@ import {
 import { CryptoService } from '@/shared/crypto/crypto.service';
 import { BranchEntity } from '@/branches/branch.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DropdownItemDto, FilterDto } from '@/users/dto/filter.dto';
+import { FilterDto } from '@/users/dto/filter.dto';
 import { UserEntity } from '@/users/user.entity';
 import { PostEntity } from '@/posts/post.entity';
 import { Role } from '@/shared/enums/Role.enum';
@@ -103,30 +103,13 @@ export class UsersService {
     }
 
     public async getFilteredUsers(filterDto: FilterDto): Promise<UserEntity[]> {
-        const getEntityByCode = (
-            repository: Repository<any>,
-            optionalArray?: DropdownItemDto[],
-        ) => {
-            return repository.findBy({
-                code: optionalArray
-                    ? Any(optionalArray.map((item) => item.code))
-                    : undefined,
-            });
-        };
-
-        const branches = await getEntityByCode(
-            this.branchesRepository,
-            filterDto.branches,
-        );
-
-        const posts = await getEntityByCode(
-            this.postsRepository,
-            filterDto.posts,
-        );
-
         const filteredUsers: UserEntity[] = await this.usersRepository.findBy({
-            branch: Any(branches),
-            post: Any(posts),
+            branch: filterDto.branches
+                ? Any(filterDto.branches.map((branch) => branch.code))
+                : undefined,
+            post: filterDto.posts
+                ? Any(filterDto.posts.map((post) => post.code))
+                : undefined,
         });
 
         const nameSegments = filterDto.name?.split(' ') || [];
