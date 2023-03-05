@@ -13,6 +13,7 @@ import {
     ApiOkResponse,
     ApiHeader,
     ApiTags,
+    ApiBody,
 } from '@nestjs/swagger';
 import {
     NotFoundException,
@@ -83,6 +84,11 @@ export class UsersController {
         description: 'Returns filtered users',
         type: UserDto,
         isArray: true,
+    })
+    @ApiBody({
+        description: 'Filter',
+        type: FilterDto,
+        required: true,
     })
     @Post('/')
     public async getFilteredUsers(

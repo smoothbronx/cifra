@@ -37,7 +37,7 @@ export class AuthService {
             );
             return await this.generateNewTokensPair(user);
         } catch {
-            throw new UnauthorizedException('Incorrect credentials');
+            throw new UnauthorizedException('Invalid refresh token');
         }
     }
 

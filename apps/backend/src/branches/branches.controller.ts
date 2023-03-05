@@ -1,7 +1,11 @@
+import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
+import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
 import { BranchesService } from '@/branches/branches.service';
 import { BranchEntity } from '@/branches/branch.entity';
 import { BranchDto } from '@/branches/branch.dto';
 import {
+    NotFoundException,
+    ConflictException,
     ParseIntPipe,
     Controller,
     HttpCode,
@@ -12,21 +16,16 @@ import {
     Body,
     Post,
     Get,
-    NotFoundException,
-    ConflictException,
 } from '@nestjs/common';
 import {
-    ApiBearerAuth,
-    ApiCreatedResponse,
-    ApiHeader,
-    ApiNoContentResponse,
-    ApiOkResponse,
-    ApiTags,
     ApiUnauthorizedResponse,
+    ApiNoContentResponse,
+    ApiCreatedResponse,
+    ApiBearerAuth,
+    ApiOkResponse,
+    ApiHeader,
+    ApiTags,
 } from '@nestjs/swagger';
-import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
-import { PostEntity } from '@/posts/post.entity';
-import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
 
 @ApiTags('branches')
 @ApiHeader({
@@ -48,7 +47,7 @@ export class BranchesController {
 
     @ApiOkResponse({
         description: 'Return the all branches',
-        type: PostEntity,
+        type: BranchDto,
         isArray: true,
     })
     @Get()
@@ -58,7 +57,7 @@ export class BranchesController {
 
     @ApiOkResponse({
         description: 'Return the branch by his id',
-        type: PostEntity,
+        type: BranchDto,
     })
     @ApiException(() => new NotFoundException('Branch not found'))
     @Get('/:id/')

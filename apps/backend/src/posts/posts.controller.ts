@@ -1,7 +1,11 @@
+import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
+import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
 import { PostsService } from '@/posts/posts.service';
 import { PostEntity } from '@/posts/post.entity';
 import { PostDto } from '@/posts/post.dto';
 import {
+    NotFoundException,
+    ConflictException,
     ParseIntPipe,
     Controller,
     HttpCode,
@@ -12,20 +16,16 @@ import {
     Body,
     Post,
     Get,
-    NotFoundException,
-    ConflictException,
 } from '@nestjs/common';
 import {
-    ApiBearerAuth,
-    ApiCreatedResponse,
-    ApiHeader,
-    ApiNoContentResponse,
-    ApiOkResponse,
-    ApiTags,
     ApiUnauthorizedResponse,
+    ApiNoContentResponse,
+    ApiCreatedResponse,
+    ApiBearerAuth,
+    ApiOkResponse,
+    ApiHeader,
+    ApiTags,
 } from '@nestjs/swagger';
-import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
-import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
 
 @ApiTags('posts')
 @ApiHeader({
@@ -47,7 +47,7 @@ export class PostsController {
 
     @ApiOkResponse({
         description: 'Return the all posts',
-        type: PostEntity,
+        type: PostDto,
         isArray: true,
     })
     @Get()
@@ -57,7 +57,7 @@ export class PostsController {
 
     @ApiOkResponse({
         description: 'Return the post by his id',
-        type: PostEntity,
+        type: PostDto,
     })
     @ApiException(() => new NotFoundException('Post not found'))
     @Get('/:id/')
