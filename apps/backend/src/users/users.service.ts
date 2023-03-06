@@ -104,12 +104,14 @@ export class UsersService {
 
     public async getFilteredUsers(filterDto: FilterDto): Promise<UserEntity[]> {
         const filteredUsers: UserEntity[] = await this.usersRepository.findBy({
-            branch: filterDto.branches
-                ? Any(filterDto.branches.map((branch) => branch.code))
-                : undefined,
-            post: filterDto.posts
-                ? Any(filterDto.posts.map((post) => post.code))
-                : undefined,
+            branch:
+                filterDto.branches && filterDto.branches.length !== 0
+                    ? Any(filterDto.branches.map((branch) => branch.code))
+                    : undefined,
+            post:
+                filterDto.posts && filterDto.posts.length !== 0
+                    ? Any(filterDto.posts.map((post) => post.code))
+                    : undefined,
         });
 
         const nameSegments = filterDto.name?.split(' ') || [];
