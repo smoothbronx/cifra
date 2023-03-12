@@ -1,0 +1,18 @@
+{
+    "name": "@cifra/integration",
+    "version": "1.0.0",
+    "workspaces": {
+        "packages": [
+            "apps/*"
+        ]
+    },
+    "repository": "https://github.com/smoothbronx/cifra.git",
+    "author": "smoothbronx <vlad.uhwatov@yandex.ru>",
+    "license": "MIT",
+    "private": true,
+    "scripts": {
+        "start": "yarn start:database && yarn start:debug",
+        "start:database": "yarn workspace @cifra/database start",
+        "start:debug": "yarn workspace @cifra/backend start:debug"
+    }
+}

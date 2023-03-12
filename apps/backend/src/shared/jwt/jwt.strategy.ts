@@ -1,9 +1,9 @@
 import { UnauthorizedException, Injectable } from '@nestjs/common';
-import { UserEntity } from '@/users/user.entity';
 import { TokenPayload } from '@/@types/TokenPayload';
 import { UsersService } from '@/users/users.service';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
+import { UserEntity } from '@/users/user.entity';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     public validate(payload: TokenPayload): Promise<UserEntity> {
         if (payload.type !== 'access') throw new UnauthorizedException();
         try {
-            return this.usersService.getUserByLogin(payload.login);
+            return this.usersService.getUserByEmail(payload.email);
         } catch {
             throw new UnauthorizedException();
         }

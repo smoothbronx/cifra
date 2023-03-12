@@ -1,6 +1,18 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { DropdownItemDto } from '@/users/dto/filter.dto';
 import { Role } from '@/shared/enums/Role.enum';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+    ValidateNested,
+    IsMobilePhone,
+    IsOptional,
+    MaxLength,
+    MinLength,
+    IsString,
+    Matches,
+    IsEnum,
+    IsEmail,
+} from 'class-validator';
 
 export class UserDto {
     @ApiProperty({
@@ -14,11 +26,11 @@ export class UserDto {
 
     @ApiProperty({
         required: true,
-        name: 'login',
-        description: 'Логин пользователя',
+        name: 'email',
+        description: 'Адрес электронной почты пользователя',
         example: 'ivanII@example.com',
     })
-    public login: string;
+    public email: string;
 
     @ApiProperty({
         required: true,
@@ -35,6 +47,9 @@ export class UserDto {
         example: 'Иванов',
     })
     public lastName: string;
+
+    @IsMobilePhone()
+    public phoneNumber: number;
 
     @IsString()
     @IsOptional()
@@ -97,4 +112,76 @@ export class UserDto {
         example: 'P@ssw0rd',
     })
     public password;
+}
+
+export class UserCreatingDto {
+    @IsString()
+    @ApiProperty({
+        name: 'fullname',
+        description: 'ФИО пользователя',
+        example: 'Иванов Иван Иванович',
+        required: true,
+    })
+    public fullname: string;
+
+    @IsEmail()
+    @ApiProperty({
+        name: 'email',
+        description: 'Адрес электронной почты пользователя',
+        required: true,
+        example: 'ivanII@example.com',
+    })
+    public email: string;
+
+    @IsMobilePhone()
+    @ApiProperty({
+        name: 'phone',
+        description: 'Номер телефона пользователя',
+        required: true,
+    })
+    public phone: string;
+
+    @IsString()
+    @MinLength(6)
+    @MaxLength(20)
+    @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+        message: 'Этот пароль слишком простой',
+    })
+    @ApiProperty({
+        name: 'password',
+        description: 'Пароль пользователя',
+        required: true,
+    })
+    public password: string;
+
+    @IsOptional()
+    @ValidateNested()
+    @Type(() => DropdownItemDto)
+    @ApiProperty({
+        name: 'branch',
+        description: 'Филиал пользователя',
+        required: false,
+    })
+    public branch?: DropdownItemDto;
+
+    @IsOptional()
+    @ValidateNested()
+    @Type(() => DropdownItemDto)
+    @ApiProperty({
+        name: 'post',
+        description: 'Должность пользователя',
+        required: false,
+    })
+    public post?: DropdownItemDto;
+
+    @IsEnum(Role)
+    @IsOptional()
+    @ApiProperty({
+        name: 'role',
+        description: 'Роль пользователя в системе',
+        required: false,
+        example: Role.ADMIN,
+        default: Role.USER,
+    })
+    public role: Role = Role.USER;
 }

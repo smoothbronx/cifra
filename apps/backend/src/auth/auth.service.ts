@@ -31,8 +31,8 @@ export class AuthService {
         });
 
         try {
-            const user = await this.usersService.getUserByLoginAndRefresh(
-                token.login,
+            const user = await this.usersService.getUserByEmailAndRefresh(
+                token.email,
                 refreshToken,
             );
             return await this.generateNewTokensPair(user);
@@ -42,8 +42,8 @@ export class AuthService {
     }
 
     public async signIn(userCredentials: AuthSignInDto): Promise<AuthTokens> {
-        const user = await this.usersService.getUserByLogin(
-            userCredentials.login,
+        const user = await this.usersService.getUserByEmail(
+            userCredentials.email,
         );
 
         if (!user) {
@@ -77,7 +77,7 @@ export class AuthService {
 
     private generateNewAuthTokensPair(user: UserEntity): AuthTokens {
         const getTokenPayload = (type): Partial<TokenPayload> => ({
-            login: user.login,
+            email: user.email,
             role: user.role,
             type: type,
         });

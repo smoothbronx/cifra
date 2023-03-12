@@ -13,6 +13,8 @@ services:
             - /data/postgres/:/var/lib/postgresql/data
         ports:
             - ${POSTGRES_PORT}:${POSTGRES_PORT}
+        networks:
+            - database
 
     pgAdmin:
         image: dpage/pgadmin4
@@ -24,6 +26,8 @@ services:
             PGADMIN_DEFAULT_EMAIL: admin@example.com
             PGADMIN_DEFAULT_PASSWORD: admin
         restart: unless-stopped
+        networks:
+            - database
 
 networks:
-    backend:
+    database:

@@ -17,8 +17,8 @@ export class UserEntity extends BaseEntity {
     @PrimaryGeneratedColumn({ name: 'id' })
     public readonly id: number;
 
-    @Column({ unique: true, nullable: false, name: 'login' })
-    public login: string;
+    @Column({ unique: true, nullable: false, name: 'email' })
+    public email: string;
 
     @Column({ nullable: false, name: 'first_name' })
     public firstName: string;
@@ -55,8 +55,8 @@ export class UserEntity extends BaseEntity {
     })
     public createdAt: Date;
 
-    @Column({ nullable: true, name: 'last_entry' })
-    public lastEntry: number;
+    @Column({ type: 'timestamp', nullable: true, name: 'last_entry' })
+    public lastEntry: Date;
 
     @Exclude({ toPlainOnly: true })
     @Column({ nullable: true, name: 'refresh_token' })
