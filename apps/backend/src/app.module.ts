@@ -11,6 +11,8 @@ import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import * as Joi from 'joi';
+import { BranchesService } from '@/branches/branches.service';
+import { PostsService } from '@/posts/posts.service';
 
 @Module({
     imports: [
@@ -59,8 +61,34 @@ export class AppModule {
     constructor(
         @Inject(UsersService)
         private readonly usersService: UsersService,
+        @Inject(BranchesService)
+        private readonly branchesService: BranchesService,
+        @Inject(PostsService)
+        private readonly postsService: PostsService,
     ) {
-        usersService.createAdmin();
-        usersService.createModerator();
+        branchesService
+            .insertBranches(
+                'Нижний новгород',
+                'Саратов',
+                'Иркутск',
+                'Владивосток',
+                'Улан-Удэ',
+                'Севастополь',
+                'Мурманск',
+                'Калининград',
+            )
+            .then(() => {
+                postsService
+                    .insertPosts(
+                        'Администратор',
+                        'Старший преподаватель',
+                        'Младший преподаватель',
+                        'Ученик',
+                    )
+                    .then(() => {
+                        usersService.createAdmin();
+                        usersService.createModerator();
+                    });
+            });
     }
 }

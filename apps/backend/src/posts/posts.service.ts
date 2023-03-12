@@ -43,6 +43,19 @@ export class PostsService {
         await this.postsRepository.update({ code: postCode }, postDto);
     }
 
+    public async insertPosts(...branches: string[]): Promise<void> {
+        for (const branchName of branches) {
+            const foundBranch = await this.postsRepository.findOneBy({
+                name: branchName,
+            });
+            if (foundBranch) continue;
+            const newBranch = this.postsRepository.create({
+                name: branchName,
+            });
+            await this.postsRepository.save(newBranch);
+        }
+    }
+
     private async getPostByIdOrFall(code: number): Promise<PostEntity> {
         const post = await this.postsRepository.findOneBy({ code });
         if (!post) throw new NotFoundException('Post not found');

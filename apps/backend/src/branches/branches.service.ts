@@ -34,6 +34,19 @@ export class BranchesService {
         await this.branchesRepository.save(newBranch);
     }
 
+    public async insertBranches(...branches: string[]): Promise<void> {
+        for (const branchName of branches) {
+            const foundBranch = await this.branchesRepository.findOneBy({
+                name: branchName,
+            });
+            if (foundBranch) continue;
+            const newBranch = this.branchesRepository.create({
+                name: branchName,
+            });
+            await this.branchesRepository.save(newBranch);
+        }
+    }
+
     public async deleteBranch(branchCode: number): Promise<void> {
         await this.getBranchByIdOrFall(branchCode);
         await this.branchesRepository.delete({ code: branchCode });
