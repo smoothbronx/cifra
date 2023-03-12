@@ -61,6 +61,7 @@ export class UsersController {
 
     @ApiCreatedResponse({
         description: 'User successfully created',
+        type: UserDto,
     })
     @ApiException(() => new ConflictException('User already exists'), {
         description: 'User exists in our service by email',
@@ -79,8 +80,8 @@ export class UsersController {
     public async createUser(
         @AuthUser() user: UserEntity,
         @Body() credentialsDto: UserCreatingDto,
-    ): Promise<void> {
-        await this.userService.createUser(user, credentialsDto);
+    ): Promise<UserEntity> {
+        return this.userService.createUser(user, credentialsDto);
     }
 
     @ApiOkResponse({

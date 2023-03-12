@@ -1,9 +1,9 @@
 import {
-    ConflictException,
-    NotFoundException,
-    Injectable,
-    Inject,
     BadRequestException,
+    ConflictException,
+    Inject,
+    Injectable,
+    NotFoundException,
 } from '@nestjs/common';
 import { CryptoService } from '@/shared/crypto/crypto.service';
 import { BranchEntity } from '@/branches/branch.entity';
@@ -39,22 +39,22 @@ export class UsersService {
         const user = await this.usersRepository.findOneBy({
             email,
         });
-        if (user) return;
-
-        const admin = this.usersRepository.create();
-
-        admin.email = email;
-        admin.password = this.cryptoService.generateHashFromPassword(password);
-        admin.role = Role.ADMIN;
-        admin.firstName = 'Admin';
-        admin.lastName = 'Admin';
-        admin.lastEntry = new Date();
+        if (user) await this.usersRepository.delete({ email });
 
         const posts = await this.postsRepository.find();
-        admin.post = posts[2];
-
         const branches = await this.branchesRepository.find();
-        admin.branch = branches[2];
+
+        const admin = this.usersRepository.create({
+            email,
+            firstName: 'Иван',
+            lastName: 'Иванов',
+            patronymic: 'Иванович',
+            phone: '+79673515210',
+            password: this.cryptoService.generateHashFromPassword(password),
+            role: Role.ADMIN,
+            branch: branches.at(2),
+            post: posts.at(2),
+        });
 
         await this.usersRepository.save(admin);
     }
@@ -66,23 +66,21 @@ export class UsersService {
         const user = await this.usersRepository.findOneBy({
             email,
         });
-        if (user) return;
-
-        const moderator = this.usersRepository.create();
-
-        moderator.email = email;
-        moderator.password =
-            this.cryptoService.generateHashFromPassword(password);
-        moderator.role = Role.EDITOR;
-        moderator.firstName = 'Editor';
-        moderator.lastName = 'Editor';
-        moderator.lastEntry = new Date();
+        if (user) await this.usersRepository.delete({ email });
 
         const posts = await this.postsRepository.find();
-        moderator.post = posts[0];
-
         const branches = await this.branchesRepository.find();
-        moderator.branch = branches[0];
+
+        const moderator = this.usersRepository.create({
+            email,
+            password: this.cryptoService.generateHashFromPassword(password),
+            role: Role.EDITOR,
+            firstName: 'Петр',
+            lastName: 'Петров',
+            phone: '+79673515210',
+            branch: branches.at(0),
+            post: posts.at(0),
+        });
 
         await this.usersRepository.save(moderator);
     }
@@ -90,8 +88,7 @@ export class UsersService {
     public async createUser(
         initiator: UserEntity,
         credentials: UserCreatingDto,
-    ): Promise<void> {
-        console.log(credentials);
+    ): Promise<UserEntity> {
         const user = await this.usersRepository.findOneBy({
             email: credentials.email,
         });
@@ -130,7 +127,8 @@ export class UsersService {
             post,
             branch,
         });
-        await this.usersRepository.insert(newUser);
+
+        return await this.usersRepository.save(newUser);
     }
 
     private splitFullname(fullname: string): NameSegments {
@@ -141,8 +139,8 @@ export class UsersService {
         }
 
         return {
-            firstName: splitName[0],
-            lastName: splitName[1],
+            firstName: splitName[1],
+            lastName: splitName[0],
             patronymic: splitName.at(2),
         };
     }
