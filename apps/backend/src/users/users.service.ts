@@ -101,15 +101,6 @@ export class UsersService {
             credentials.password,
         );
 
-        let post: PostEntity | null;
-        if (credentials.post) {
-            post = await this.getOrThrowBadRequest(
-                credentials.post,
-                this.postsRepository,
-                'Post not found',
-            );
-        } else post = initiator.post;
-
         let branch: BranchEntity;
         if (credentials.branch) {
             branch = await this.getOrThrowBadRequest(
@@ -117,14 +108,13 @@ export class UsersService {
                 this.branchesRepository,
                 'Branch not found',
             );
-        } else branch = initiator.post;
+        } else branch = initiator.branch;
 
         const nameSegments = this.splitFullname(credentials.fullname);
 
         const newUser = this.usersRepository.create({
             ...credentials,
             ...nameSegments,
-            post,
             branch,
         });
 
