@@ -86,13 +86,13 @@ export class AuthService {
                 {
                     ...getTokenPayload('access'),
                 },
-                { expiresIn: '2h' },
+                { expiresIn: '2h', issuer: 'CifraIntegration' },
             ),
             refreshToken: this.jwtService.sign(
                 {
                     ...getTokenPayload('refresh'),
                 },
-                { expiresIn: '30d' },
+                { expiresIn: '30d', issuer: 'CifraIntegration' },
             ),
         };
     }
