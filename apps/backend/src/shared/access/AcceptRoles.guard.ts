@@ -1,15 +1,27 @@
-import { ExecutionContext, CanActivate, Injectable } from '@nestjs/common';
+import {
+    ExecutionContext,
+    CanActivate,
+    Injectable,
+    Inject,
+} from '@nestjs/common';
 import { UserEntity } from '@/users/user.entity';
 import { Role } from '@/shared/enums/Role.enum';
 import { Observable } from 'rxjs';
+import { Reflector } from '@nestjs/core';
 
 @Injectable()
 export class AcceptRolesGuard implements CanActivate {
+    constructor(
+        @Inject(Reflector)
+        private readonly reflector: Reflector,
+    ) {}
+
     public canActivate(
         context: ExecutionContext,
     ): boolean | Promise<boolean> | Observable<boolean> {
-        const { metadata, user } = context.switchToHttp().getRequest();
-        return this.userHasAccessToRoute(user, metadata.roles);
+        const { user } = context.switchToHttp().getRequest();
+        const roles = this.reflector.get<Role[]>('roles', context.getHandler());
+        return this.userHasAccessToRoute(user, roles);
     }
 
     private userHasAccessToRoute(user: UserEntity, roles?: Role[]): boolean {
