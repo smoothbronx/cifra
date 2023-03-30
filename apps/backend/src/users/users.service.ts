@@ -55,7 +55,7 @@ export class UsersService {
             patronymic: 'Иванович',
             phone: '+79673515210',
             password: this.cryptoService.generateHashFromPassword(password),
-            role: Role.USER,
+            role: Role.ADMIN,
             branch: branches.at(2),
             post: posts.at(2),
         });

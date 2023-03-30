@@ -1,13 +1,13 @@
+import { UserEntity } from '@/users/user.entity';
+import { Role } from '@/shared/enums/Role.enum';
+import { Reflector } from '@nestjs/core';
+import { Observable } from 'rxjs';
 import {
     ExecutionContext,
     CanActivate,
     Injectable,
     Inject,
 } from '@nestjs/common';
-import { UserEntity } from '@/users/user.entity';
-import { Role } from '@/shared/enums/Role.enum';
-import { Observable } from 'rxjs';
-import { Reflector } from '@nestjs/core';
 
 @Injectable()
 export class AcceptRolesGuard implements CanActivate {
