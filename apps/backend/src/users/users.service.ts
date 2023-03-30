@@ -17,6 +17,7 @@ import {
     Injectable,
     forwardRef,
     Inject,
+    MethodNotAllowedException,
 } from '@nestjs/common';
 
 @Injectable()
@@ -206,7 +207,13 @@ export class UsersService {
         );
     }
 
-    public async deleteUser(userId: number): Promise<void> {
+    public async deleteUser(
+        initiator: UserEntity,
+        userId: number,
+    ): Promise<void> {
+        if (initiator.id === userId)
+            throw new MethodNotAllowedException('User cannot delete himself');
+
         const user: UserEntity | null = await this.usersRepository.findOneBy({
             id: userId,
         });

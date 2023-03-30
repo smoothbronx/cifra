@@ -32,6 +32,7 @@ import {
     Body,
     Post,
     Get,
+    MethodNotAllowedException,
 } from '@nestjs/common';
 
 @ApiHeader({
@@ -151,9 +152,16 @@ export class UsersController {
     @ApiException(() => new NotFoundException('User not found'), {
         description: 'The user being deleted was not found',
     })
+    @ApiException(
+        () => new MethodNotAllowedException('User cannot delete himself'),
+        {
+            description: 'The user cannot delete himself.',
+        },
+    )
     public async deleteUser(
+        @AuthUser() initiator: UserEntity,
         @Param('id', ParseIntPipe) userId: number,
     ): Promise<void> {
-        await this.userService.deleteUser(userId);
+        await this.userService.deleteUser(initiator, userId);
     }
 }
