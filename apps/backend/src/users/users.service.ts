@@ -1,21 +1,23 @@
-import {
-    BadRequestException,
-    ConflictException,
-    Inject,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
+import { AvailabilityService } from '@/availability/availability.service';
+import { UserCreatingDto, UserDto } from '@/users/dto/user.dto';
 import { CryptoService } from '@/shared/crypto/crypto.service';
+import { Any, FindOptionsWhere, Repository } from 'typeorm';
 import { BranchEntity } from '@/branches/branch.entity';
+import { NameSegments } from '@/@types/NameSegments';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FilterDto } from '@/users/dto/filter.dto';
 import { UserEntity } from '@/users/user.entity';
 import { PostEntity } from '@/posts/post.entity';
 import { Role } from '@/shared/enums/Role.enum';
-import { UserCreatingDto, UserDto } from '@/users/dto/user.dto';
 import { ConfigService } from '@nestjs/config';
-import { Any, FindOptionsWhere, Repository } from 'typeorm';
-import { NameSegments } from '@/@types/NameSegments';
+import {
+    BadRequestException,
+    ConflictException,
+    NotFoundException,
+    Injectable,
+    forwardRef,
+    Inject,
+} from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
@@ -24,6 +26,8 @@ export class UsersService {
     constructor(
         @Inject(ConfigService)
         private readonly configService: ConfigService,
+        @Inject(forwardRef(() => AvailabilityService))
+        private readonly availabilityService: AvailabilityService,
         @InjectRepository(UserEntity)
         private readonly usersRepository: Repository<UserEntity>,
         @InjectRepository(PostEntity)
@@ -51,17 +55,18 @@ export class UsersService {
             patronymic: 'Иванович',
             phone: '+79673515210',
             password: this.cryptoService.generateHashFromPassword(password),
-            role: Role.ADMIN,
+            role: Role.USER,
             branch: branches.at(2),
             post: posts.at(2),
         });
 
         await this.usersRepository.save(admin);
+        await this.availabilityService.getInitialAvailability(admin);
     }
 
-    public async createModerator(): Promise<void> {
-        const email = this.configService.getOrThrow('MODERATOR_LOGIN');
-        const password = this.configService.getOrThrow('MODERATOR_PASSWORD');
+    public async createEditor(): Promise<void> {
+        const email = this.configService.getOrThrow('EDITOR_LOGIN');
+        const password = this.configService.getOrThrow('EDITOR_PASSWORD');
 
         const user = await this.usersRepository.findOneBy({
             email,
@@ -83,14 +88,21 @@ export class UsersService {
         });
 
         await this.usersRepository.save(moderator);
+        await this.availabilityService.getInitialAvailability(moderator);
+    }
+
+    public saveUser(user: UserEntity): Promise<UserEntity> {
+        return this.usersRepository.save(user);
     }
 
     public async createUser(
         initiator: UserEntity,
         credentials: UserCreatingDto,
     ): Promise<UserEntity> {
-        const user = await this.usersRepository.findOneBy({
-            email: credentials.email,
+        this.validatePayload(initiator, credentials);
+
+        const user = await this.usersRepository.exist({
+            where: { email: credentials.email },
         });
 
         if (user) {
@@ -118,7 +130,32 @@ export class UsersService {
             branch,
         });
 
+        await this.availabilityService.getInitialAvailability(newUser);
         return await this.usersRepository.save(newUser);
+    }
+
+    private validatePayload(
+        initiator: UserEntity,
+        credentials: UserCreatingDto,
+    ): void {
+        if (
+            (initiator.role === Role.EDITOR &&
+                credentials.role !== Role.USER) ||
+            credentials.role === Role.ADMIN
+        ) {
+            throw new BadRequestException(
+                'Initiator cannot create a user with this role',
+            );
+        }
+
+        if (
+            [Role.HEAD, Role.EDITOR].includes(initiator.role) &&
+            credentials.branch !== initiator.branch
+        ) {
+            throw new BadRequestException(
+                'Head of the branch cannot create users of other branches',
+            );
+        }
     }
 
     private splitFullname(fullname: string): NameSegments {

@@ -1,7 +1,14 @@
+import { AvailabilityEntity } from '@/availability/availability.entity';
+import { AvailabilityModule } from '@/availability/availability.module';
+import { RelationEntity } from '@/cards/entities/relation.entity';
+import { BranchesService } from '@/branches/branches.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BranchesModule } from '@/branches/branches.module';
+import { CardEntity } from '@/cards/entities/card.entity';
 import { BranchEntity } from '@/branches/branch.entity';
 import { UsersService } from '@/users/users.service';
+import { PostsService } from '@/posts/posts.service';
+import { CardsModule } from '@/cards/cards.module';
 import { UsersModule } from './users/users.module';
 import { PostsModule } from '@/posts/posts.module';
 import { PostEntity } from '@/posts/post.entity';
@@ -11,8 +18,6 @@ import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import * as Joi from 'joi';
-import { BranchesService } from '@/branches/branches.service';
-import { PostsService } from '@/posts/posts.service';
 
 @Module({
     imports: [
@@ -44,12 +49,21 @@ import { PostsService } from '@/posts/posts.service';
                 ssl: {
                     rejectUnauthorized: false,
                 },
-                entities: [UserEntity, PostEntity, BranchEntity],
+                entities: [
+                    UserEntity,
+                    PostEntity,
+                    BranchEntity,
+                    CardEntity,
+                    RelationEntity,
+                    AvailabilityEntity,
+                ],
                 autoLoadEntities: true,
                 synchronize: true,
             }),
         }),
+        AvailabilityModule,
         BranchesModule,
+        CardsModule,
         PostsModule,
         UsersModule,
         AuthModule,
@@ -87,7 +101,7 @@ export class AppModule {
                     )
                     .then(() => {
                         usersService.createAdmin();
-                        usersService.createModerator();
+                        usersService.createEditor();
                     });
             });
     }

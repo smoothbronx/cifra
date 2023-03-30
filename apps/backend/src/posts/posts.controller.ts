@@ -1,7 +1,9 @@
 import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
 import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
+import { AcceptRoles } from '@/shared/access/acceptRoles.decorator';
 import { PostsService } from '@/posts/posts.service';
 import { PostEntity } from '@/posts/post.entity';
+import { Role } from '@/shared/enums/Role.enum';
 import { PostDto } from '@/posts/post.dto';
 import {
     NotFoundException,
@@ -71,6 +73,7 @@ export class PostsController {
         description: 'The post creating was successful',
     })
     @ApiException(() => new ConflictException('Post with current name exists'))
+    @AcceptRoles(Role.ADMIN)
     @Post()
     @HttpCode(201)
     public createPost(@Body() postDto: PostDto): Promise<void> {
@@ -83,6 +86,7 @@ export class PostsController {
     @ApiException(() => new NotFoundException('Post not found'), {
         description: 'Post not found',
     })
+    @AcceptRoles(Role.ADMIN)
     @Delete('/:id/')
     @HttpCode(204)
     public deletePost(
@@ -100,6 +104,7 @@ export class PostsController {
     @ApiException(() => new ConflictException('Post exists'), {
         description: 'Another post with current name exists',
     })
+    @AcceptRoles(Role.ADMIN)
     @Patch('/:id/')
     @HttpCode(204)
     public updatePost(

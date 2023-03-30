@@ -1,24 +1,20 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from '@/users/user.entity';
-import { PostEntity } from '@/posts/post.entity';
-import { BranchEntity } from '@/branches/branch.entity';
+import { AvailabilityModule } from '@/availability/availability.module';
+import { BranchesModule } from '@/branches/branches.module';
 import { UsersController } from '@/users/users.controller';
 import { UsersService } from '@/users/users.service';
-import { BranchesModule } from '@/branches/branches.module';
+import { forwardRef, Module } from '@nestjs/common';
 import { PostsModule } from '@/posts/posts.module';
+import { UserEntity } from '@/users/user.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
-const dynamicTypeOrmModule = TypeOrmModule.forFeature([
-    UserEntity,
-    PostEntity,
-    BranchEntity,
-]);
+const dynamicTypeOrmModule = TypeOrmModule.forFeature([UserEntity]);
 
 @Module({
     imports: [
         dynamicTypeOrmModule,
         forwardRef(() => PostsModule),
         forwardRef(() => BranchesModule),
+        forwardRef(() => AvailabilityModule),
     ],
     controllers: [UsersController],
     providers: [UsersService],

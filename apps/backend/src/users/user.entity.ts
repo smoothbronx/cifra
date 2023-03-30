@@ -1,3 +1,4 @@
+import { AvailabilityEntity } from '@/availability/availability.entity';
 import { BranchEntity } from '@/branches/branch.entity';
 import { PostEntity } from '@/posts/post.entity';
 import { Role } from '@/shared/enums/Role.enum';
@@ -8,6 +9,7 @@ import {
     BaseEntity,
     JoinColumn,
     ManyToOne,
+    OneToOne,
     Column,
     Entity,
 } from 'typeorm';
@@ -68,6 +70,14 @@ export class UserEntity extends BaseEntity {
     @Exclude({ toPlainOnly: true })
     @Column({ nullable: false, name: 'password' })
     public password: string;
+
+    @Exclude({ toPlainOnly: true })
+    @JoinColumn({ name: 'availability_id' })
+    @OneToOne(() => AvailabilityEntity, (cards) => cards.user, {
+        eager: true,
+        cascade: true,
+    })
+    public cards: AvailabilityEntity;
 
     @Exclude({ toPlainOnly: true })
     public getFullName(): string {

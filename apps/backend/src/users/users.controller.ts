@@ -1,11 +1,13 @@
 import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
 import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
+import { AcceptRoles } from '@/shared/access/acceptRoles.decorator';
 import { AuthUser } from '@/shared/decorators/authUser.decorator';
 import { UserCreatingDto, UserDto } from '@/users/dto/user.dto';
 import { JwtAuthGuard } from '@/shared/jwt/jwt.guard';
 import { UsersService } from '@/users/users.service';
 import { FilterDto } from '@/users/dto/filter.dto';
 import { UserEntity } from '@/users/user.entity';
+import { Role } from '@/shared/enums/Role.enum';
 import {
     ApiUnauthorizedResponse,
     ApiNoContentResponse,
@@ -13,8 +15,8 @@ import {
     ApiBearerAuth,
     ApiOkResponse,
     ApiHeader,
-    ApiTags,
     ApiBody,
+    ApiTags,
 } from '@nestjs/swagger';
 import {
     BadRequestException,
@@ -43,8 +45,9 @@ import {
     type: InvalidJwtExceptionSchema,
 })
 @ApiTags('users')
-@Controller('users')
+@AcceptRoles()
 @UseGuards(JwtAuthGuard)
+@Controller('users')
 export class UsersController {
     constructor(private readonly userService: UsersService) {}
 
@@ -75,6 +78,7 @@ export class UsersController {
     @ApiException(() => new BadRequestException('Invalid name format'), {
         description: 'Invalid name format',
     })
+    @AcceptRoles(Role.ADMIN, Role.EDITOR)
     @HttpCode(201)
     @Post('/')
     public async createUser(
@@ -118,6 +122,7 @@ export class UsersController {
         type: FilterDto,
         required: true,
     })
+    @AcceptRoles()
     @Post('/filter/')
     public getFilteredUsers(
         @Body() filterDto: FilterDto,
@@ -125,12 +130,13 @@ export class UsersController {
         return this.userService.getFilteredUsers(filterDto);
     }
 
-    @HttpCode(204)
-    @Patch('/:id/')
     @ApiNoContentResponse({ description: 'The user update was successful' })
     @ApiException(() => new NotFoundException('User not found'), {
         description: 'The user being update was not found',
     })
+    @AcceptRoles(Role.ADMIN)
+    @HttpCode(204)
+    @Patch('/:id/')
     public async updateUser(
         @Param('id', ParseIntPipe) userId: number,
         @Body() userDto: UserDto,
@@ -138,6 +144,7 @@ export class UsersController {
         await this.userService.updateUser(userId, userDto);
     }
 
+    @AcceptRoles(Role.ADMIN)
     @HttpCode(204)
     @Delete('/:id/')
     @ApiNoContentResponse({ description: 'The user deletion was successful' })

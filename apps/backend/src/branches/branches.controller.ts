@@ -1,8 +1,10 @@
 import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
 import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
+import { AcceptRoles } from '@/shared/access/acceptRoles.decorator';
 import { BranchesService } from '@/branches/branches.service';
 import { BranchEntity } from '@/branches/branch.entity';
 import { BranchDto } from '@/branches/branch.dto';
+import { Role } from '@/shared/enums/Role.enum';
 import {
     NotFoundException,
     ConflictException,
@@ -77,6 +79,7 @@ export class BranchesController {
             description: 'Branch with current name exists',
         },
     )
+    @AcceptRoles(Role.ADMIN)
     @Post()
     @HttpCode(201)
     public async createBranch(@Body() branchDto: BranchDto): Promise<void> {
@@ -89,6 +92,7 @@ export class BranchesController {
     @ApiException(() => new NotFoundException('Branch not found'), {
         description: 'Branch not found',
     })
+    @AcceptRoles(Role.ADMIN)
     @Delete('/:id/')
     @HttpCode(204)
     public deleteBranch(
@@ -106,6 +110,7 @@ export class BranchesController {
     @ApiException(() => new ConflictException('Branch exists'), {
         description: 'Another branch with current name exists',
     })
+    @AcceptRoles(Role.ADMIN)
     @Patch('/:id/')
     @HttpCode(204)
     public updateBranch(
