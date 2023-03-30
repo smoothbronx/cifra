@@ -3,7 +3,7 @@ import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator
 import { AvailabilityService } from '@/availability/availability.service';
 import { RelationEntity } from '@/cards/entities/relation.entity';
 import { AuthUser } from '@/shared/decorators/authUser.decorator';
-import { CardStatusEnum } from '@/cards/enums/cardStatus.enum';
+import { CardStatusEnum } from '@/shared/enums/cardStatus.enum';
 import { RelationDto } from '@/cards/dto/relation.dto';
 import { JwtAuthGuard } from '@/shared/jwt/jwt.guard';
 import { CardsService } from '@/cards/cards.service';

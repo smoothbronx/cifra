@@ -1,5 +1,5 @@
 import { AvailabilityEntity } from '@/availability/availability.entity';
-import { CardStatusEnum } from '@/cards/enums/cardStatus.enum';
+import { CardStatusEnum } from '@/shared/enums/cardStatus.enum';
 import { CardEntity } from '@/cards/entities/card.entity';
 import { UsersService } from '@/users/users.service';
 import { instanceToPlain } from 'class-transformer';

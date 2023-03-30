@@ -1,5 +1,5 @@
-import { CardStatusEnum } from '@/cards/enums/cardStatus.enum';
-import { CardTypeEnum } from '@/cards/enums/cardType.enum';
+import { CardStatusEnum } from '@/shared/enums/cardStatus.enum';
+import { CardTypeEnum } from '@/shared/enums/cardType.enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 

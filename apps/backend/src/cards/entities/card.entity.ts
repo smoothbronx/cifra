@@ -1,6 +1,6 @@
 import { AvailabilityEntity } from '@/availability/availability.entity';
 import { CardPositionDto } from '@/cards/dto/cardPosition.dto';
-import { CardTypeEnum } from '@/cards/enums/cardType.enum';
+import { CardTypeEnum } from '@/shared/enums/cardType.enum';
 import { Exclude, Expose } from 'class-transformer';
 import {
     PrimaryColumn,

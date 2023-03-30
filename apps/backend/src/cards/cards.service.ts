@@ -1,6 +1,6 @@
 import { AvailabilityService } from '@/availability/availability.service';
 import { RelationEntity } from '@/cards/entities/relation.entity';
-import { CardStatusEnum } from '@/cards/enums/cardStatus.enum';
+import { CardStatusEnum } from '@/shared/enums/cardStatus.enum';
 import { CardEntity } from '@/cards/entities/card.entity';
 import { RelationDto } from '@/cards/dto/relation.dto';
 import { InjectRepository } from '@nestjs/typeorm';

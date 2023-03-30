@@ -1,6 +1,6 @@
 import { Exclude, instanceToPlain, Type } from 'class-transformer';
-import { CardStatusEnum } from '@/cards/enums/cardStatus.enum';
-import { CardTypeEnum } from '@/cards/enums/cardType.enum';
+import { CardStatusEnum } from '@/shared/enums/cardStatus.enum';
+import { CardTypeEnum } from '@/shared/enums/cardType.enum';
 import { CardDataDto } from '@/cards/dto/cardData.dto';
 import { CardPositionDto } from './cardPosition.dto';
 import { ValidateNested } from 'class-validator';
