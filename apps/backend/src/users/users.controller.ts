@@ -123,7 +123,6 @@ export class UsersController {
         type: FilterDto,
         required: true,
     })
-    @AcceptRoles()
     @Post('/filter/')
     public getFilteredUsers(
         @Body() filterDto: FilterDto,
