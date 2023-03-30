@@ -25,6 +25,6 @@ export class AcceptRolesGuard implements CanActivate {
     }
 
     private userHasAccessToRoute(user: UserEntity, roles?: Role[]): boolean {
-        return roles ? user.role in roles : true;
+        return roles ? roles.includes(user.role) : true;
     }
 }

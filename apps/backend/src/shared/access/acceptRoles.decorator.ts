@@ -4,7 +4,7 @@ import { Role } from '@/shared/enums/Role.enum';
 
 export function AcceptRoles(...roles: Role[]) {
     return applyDecorators(
-        SetMetadata('roles', roles || []),
+        SetMetadata('roles', roles),
         UseGuards(AcceptRolesGuard),
     );
 }
