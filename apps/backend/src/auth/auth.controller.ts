@@ -1,24 +1,25 @@
-import {
-    Body,
-    Controller,
-    Get,
-    Post,
-    UnauthorizedException,
-} from '@nestjs/common';
+import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
+import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
+import { AuthTokens, AuthTokensDto } from '@/@types/AuthTokens';
 import { Token } from '@/shared/decorators/token.decorator';
 import { AuthSignInDto } from '@/auth/dto/auth.signin.dto';
 import { AuthService } from '@/auth/auth.service';
-import { AuthTokens, AuthTokensDto } from '@/@types/AuthTokens';
 import {
+    UnauthorizedException,
+    Controller,
+    HttpCode,
+    Body,
+    Post,
+    Get,
+} from '@nestjs/common';
+import {
+    ApiUnauthorizedResponse,
     ApiBearerAuth,
     ApiOkResponse,
+    ApiBasicAuth,
     ApiHeader,
     ApiTags,
-    ApiUnauthorizedResponse,
-    ApiBasicAuth,
 } from '@nestjs/swagger';
-import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
-import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
 
 @ApiOkResponse({
     description: 'Returns access and refresh tokens',
@@ -31,6 +32,7 @@ export class AuthController {
 
     @ApiBasicAuth('LoginAuth')
     @ApiException(() => new UnauthorizedException('Incorrect credentials'))
+    @HttpCode(200)
     @Post('/signin/')
     public async signIn(
         @Body() userCredentials: AuthSignInDto,

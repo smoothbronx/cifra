@@ -6,6 +6,8 @@ import { CardsService } from '@/cards/cards.service';
 import { forwardRef, Module } from '@nestjs/common';
 import { UsersModule } from '@/users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CourseAccessGuard } from '@/shared/guards/courseAccess.guard';
+import { CoursesModule } from '@/courses/courses.module';
 
 const dynamicTypeOrmModule = TypeOrmModule.forFeature([
     CardEntity,
@@ -17,8 +19,9 @@ const dynamicTypeOrmModule = TypeOrmModule.forFeature([
         dynamicTypeOrmModule,
         forwardRef(() => AvailabilityModule),
         forwardRef(() => UsersModule),
+        forwardRef(() => CoursesModule),
     ],
-    providers: [CardsService],
+    providers: [CardsService, CourseAccessGuard],
     controllers: [CardsController],
     exports: [dynamicTypeOrmModule, CardsService],
 })

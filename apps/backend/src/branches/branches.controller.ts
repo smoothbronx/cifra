@@ -18,6 +18,7 @@ import {
     Body,
     Post,
     Get,
+    ForbiddenException,
 } from '@nestjs/common';
 import {
     ApiUnauthorizedResponse,
@@ -79,6 +80,13 @@ export class BranchesController {
             description: 'Branch with current name exists',
         },
     )
+    @ApiException(
+        () =>
+            new ForbiddenException(
+                'Insufficient permissions to perform this operation',
+            ),
+        { description: 'The operation is not available to the user' },
+    )
     @AcceptRoles(Role.ADMIN)
     @Post()
     @HttpCode(201)
@@ -92,6 +100,13 @@ export class BranchesController {
     @ApiException(() => new NotFoundException('Branch not found'), {
         description: 'Branch not found',
     })
+    @ApiException(
+        () =>
+            new ForbiddenException(
+                'Insufficient permissions to perform this operation',
+            ),
+        { description: 'The operation is not available to the user' },
+    )
     @AcceptRoles(Role.ADMIN)
     @Delete('/:id/')
     @HttpCode(204)
@@ -110,6 +125,13 @@ export class BranchesController {
     @ApiException(() => new ConflictException('Branch exists'), {
         description: 'Another branch with current name exists',
     })
+    @ApiException(
+        () =>
+            new ForbiddenException(
+                'Insufficient permissions to perform this operation',
+            ),
+        { description: 'The operation is not available to the user' },
+    )
     @AcceptRoles(Role.ADMIN)
     @Patch('/:id/')
     @HttpCode(204)

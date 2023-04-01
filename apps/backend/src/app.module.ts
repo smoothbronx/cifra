@@ -18,6 +18,8 @@ import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import * as Joi from 'joi';
+import { CourseEntity } from '@/courses/course.entity';
+import { CoursesModule } from '@/courses/courses.module';
 
 @Module({
     imports: [
@@ -50,12 +52,13 @@ import * as Joi from 'joi';
                     rejectUnauthorized: false,
                 },
                 entities: [
+                    AvailabilityEntity,
+                    RelationEntity,
+                    CourseEntity,
+                    BranchEntity,
                     UserEntity,
                     PostEntity,
-                    BranchEntity,
                     CardEntity,
-                    RelationEntity,
-                    AvailabilityEntity,
                 ],
                 autoLoadEntities: true,
                 synchronize: true,
@@ -63,6 +66,7 @@ import * as Joi from 'joi';
         }),
         AvailabilityModule,
         BranchesModule,
+        CoursesModule,
         CardsModule,
         PostsModule,
         UsersModule,

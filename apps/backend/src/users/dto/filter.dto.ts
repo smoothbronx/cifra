@@ -18,7 +18,7 @@ export class FilterDto {
         description: 'Значение для филтрации по ФИО пользователя',
         example: 'Иванов Иван Иванович',
     })
-    name?: string;
+    public name?: string;
 
     @ValidateNested()
     @IsOptional()
@@ -29,7 +29,7 @@ export class FilterDto {
         name: 'posts',
         description: 'Список фильтрации пользователей по должности',
     })
-    posts?: DropdownItemDto[];
+    public posts?: DropdownItemDto[];
 
     @ValidateNested()
     @IsOptional()
@@ -40,7 +40,18 @@ export class FilterDto {
         name: 'branches',
         description: 'Список фильтрации пользователей по филиалу',
     })
-    branches?: DropdownItemDto[];
+    public branches?: DropdownItemDto[];
+
+    @ValidateNested()
+    @IsOptional()
+    @IsArray()
+    @Type(() => DropdownItemDto)
+    @ApiProperty({
+        required: false,
+        name: 'courses',
+        description: 'Список фильтрации пользователей по курсу',
+    })
+    public courses?: DropdownItemDto[];
 }
 
 export class DropdownItemDto {

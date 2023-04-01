@@ -1,12 +1,12 @@
 import { UserEntity } from '@/users/user.entity';
 import { Role } from '@/shared/enums/Role.enum';
 import { Reflector } from '@nestjs/core';
-import { Observable } from 'rxjs';
 import {
     ExecutionContext,
     CanActivate,
     Injectable,
     Inject,
+    ForbiddenException,
 } from '@nestjs/common';
 
 @Injectable()
@@ -16,15 +16,17 @@ export class AcceptRolesGuard implements CanActivate {
         private readonly reflector: Reflector,
     ) {}
 
-    public canActivate(
-        context: ExecutionContext,
-    ): boolean | Promise<boolean> | Observable<boolean> {
+    public canActivate(context: ExecutionContext): boolean {
         const { user } = context.switchToHttp().getRequest();
         const roles = this.reflector.get<Role[]>('roles', context.getHandler());
         return this.userHasAccessToRoute(user, roles);
     }
 
     private userHasAccessToRoute(user: UserEntity, roles?: Role[]): boolean {
-        return roles ? roles.includes(user.role) : true;
+        if (!roles) return true;
+        if (roles.includes(user.role)) return true;
+        throw new ForbiddenException(
+            'Insufficient permissions to perform this operation',
+        );
     }
 }

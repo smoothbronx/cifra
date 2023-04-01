@@ -26,11 +26,11 @@ export class AuthService {
     ) {}
 
     public async refreshTokens(refreshToken: string): Promise<AuthTokens> {
-        const token = this.jwtService.verify<TokenPayload>(refreshToken, {
-            publicKey: this.configService.getOrThrow('JWT_PRIVATE_KEY'),
-        });
-
         try {
+            const token = this.jwtService.verify<TokenPayload>(refreshToken, {
+                publicKey: this.configService.getOrThrow('JWT_PRIVATE_KEY'),
+            });
+
             const user = await this.usersService.getUserByEmailAndRefresh(
                 token.email,
                 refreshToken,

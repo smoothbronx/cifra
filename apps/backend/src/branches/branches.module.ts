@@ -6,7 +6,6 @@ import { JwtAuthGuard } from '@/shared/jwt/jwt.guard';
 import { forwardRef, Module, UseGuards } from '@nestjs/common';
 import { UsersModule } from '@/users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { APP_GUARD } from '@nestjs/core';
 
 const dynamicTypeOrmModule = TypeOrmModule.forFeature([BranchEntity]);
 

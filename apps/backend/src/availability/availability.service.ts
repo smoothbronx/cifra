@@ -14,6 +14,7 @@ import {
     Injectable,
     Inject,
 } from '@nestjs/common';
+import { CourseEntity } from '@/courses/course.entity';
 
 @Injectable()
 export class AvailabilityService {
@@ -90,10 +91,17 @@ export class AvailabilityService {
         throw new BadRequestException('Unknown card status');
     }
 
-    public async getInitialAvailability(user: UserEntity) {
-        const cards = await this.cardsRepository.find();
+    public async getInitialAvailability(
+        course: CourseEntity,
+        user: UserEntity,
+    ) {
+        const cards = await this.cardsRepository.findBy({
+            course: { id: course.id },
+        });
 
-        user.cards = this.availabilityRepository.create();
+        user.cards = this.availabilityRepository.create({
+            course: Promise.resolve(course),
+        });
         await this.usersService.saveUser(user);
 
         if (cards.length > 0) {

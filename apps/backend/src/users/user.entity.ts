@@ -13,8 +13,9 @@ import {
     Column,
     Entity,
 } from 'typeorm';
+import { CourseEntity } from '@/courses/course.entity';
 
-@Entity({ name: 'user' })
+@Entity({ name: 'users' })
 export class UserEntity extends BaseEntity {
     @PrimaryGeneratedColumn({ name: 'id' })
     public readonly id: number;
@@ -63,6 +64,13 @@ export class UserEntity extends BaseEntity {
     @Column({ type: 'timestamp', nullable: true, name: 'last_entry' })
     public lastEntry: Date;
 
+    @JoinColumn({ name: 'course_id' })
+    @ManyToOne(() => CourseEntity, (course) => course.students, {
+        eager: true,
+        nullable: true,
+    })
+    public course: CourseEntity;
+
     @Exclude({ toPlainOnly: true })
     @Column({ nullable: true, name: 'refresh_token' })
     public refresh: string;
@@ -76,6 +84,7 @@ export class UserEntity extends BaseEntity {
     @OneToOne(() => AvailabilityEntity, (cards) => cards.user, {
         eager: true,
         cascade: true,
+        nullable: true,
     })
     public cards: AvailabilityEntity;
 

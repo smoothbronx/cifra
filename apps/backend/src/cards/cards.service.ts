@@ -18,6 +18,7 @@ import {
     forwardRef,
     Inject,
 } from '@nestjs/common';
+import { CourseEntity } from '@/courses/course.entity';
 
 @Injectable()
 export class CardsService {
@@ -30,29 +31,39 @@ export class CardsService {
         private readonly availabilityService: AvailabilityService,
     ) {}
 
-    public getCards(): Promise<CardEntity[]> {
-        return this.cardsRepository.find();
+    public getCards(course: CourseEntity): Promise<CardEntity[]> {
+        return this.cardsRepository.findBy({ course: { id: course.id } });
     }
 
     public async setCardStatus(
+        course: CourseEntity,
         user: UserEntity,
         cardId: string,
         status: { from: CardStatusEnum; to: CardStatusEnum },
     ): Promise<CardDto> {
-        const card = await this.getCard(cardId);
+        const card = await this.getCard(course, cardId);
         return this.availabilityService.changeCardStatus(user, card, status);
     }
 
     public async getCard(
+        course: CourseEntity,
         cardId: string,
         exception: HttpException = new BadRequestException('Card not found'),
     ): Promise<CardEntity> {
-        const card = await this.cardsRepository.findOneBy({ id: cardId });
+        const card = await this.cardsRepository.findOneBy({
+            id: cardId,
+            course: { id: course.id },
+        });
+
         if (!card) throw exception;
+
         return card;
     }
 
-    public async createCard(cardDto: CardDto): Promise<CardEntity> {
+    public async createCard(
+        course: CourseEntity,
+        cardDto: CardDto,
+    ): Promise<CardEntity> {
         const cardsCount = await this.cardsRepository.count();
 
         let card = this.cardsRepository.create({
@@ -60,6 +71,7 @@ export class CardsService {
             ...cardDto.toPlain(),
             childs: Promise.resolve([]),
             content: cardDto.data.content,
+            course: Promise.resolve(course),
         });
         card = await this.cardsRepository.save(card);
 
@@ -70,8 +82,14 @@ export class CardsService {
         return card;
     }
 
-    public async deleteCard(cardId: string): Promise<void> {
-        const card = await this.cardsRepository.findOneBy({ id: cardId });
+    public async deleteCard(
+        course: CourseEntity,
+        cardId: string,
+    ): Promise<void> {
+        const card = await this.cardsRepository.findOneBy({
+            id: cardId,
+            course: { id: course.id },
+        });
 
         if (!card) throw new NotFoundException('Card not found');
 
@@ -92,11 +110,12 @@ export class CardsService {
         relations.map(async (relation) => await relation.remove());
     }
 
-    public getRelations(): Promise<RelationEntity[]> {
-        return this.relationsRepository.find();
+    public getRelations(course: CourseEntity): Promise<RelationEntity[]> {
+        return this.relationsRepository.findBy({ course: { id: course.id } });
     }
 
     public async getRelation(
+        course: CourseEntity,
         relationId: string,
         exception: HttpException = new BadRequestException(
             'Relation not found',
@@ -104,18 +123,21 @@ export class CardsService {
     ): Promise<RelationEntity> {
         const relation = await this.relationsRepository.findOneBy({
             id: relationId,
+            course: { id: course.id },
         });
         if (!relation) throw exception;
         return relation;
     }
 
     public async createRelation(
+        course: CourseEntity,
         relationDto: RelationDto,
     ): Promise<RelationEntity> {
         const relationExists = await this.relationsRepository.exist({
             where: {
                 parent: { id: relationDto.source },
                 child: { id: relationDto.target },
+                course: { id: course.id },
             },
         });
 
@@ -123,11 +145,13 @@ export class CardsService {
             throw new ConflictException('Relation already exists');
 
         const sourceCard = await this.getCard(
+            course,
             relationDto.source,
             new BadRequestException('Source card not found'),
         );
 
         const targetCard = await this.getCard(
+            course,
             relationDto.target,
             new BadRequestException('Target card not found'),
         );
@@ -136,6 +160,7 @@ export class CardsService {
             id: uuid4().split('-').splice(0, 3).join(''),
             parent: sourceCard,
             child: targetCard,
+            course: Promise.resolve(course),
         });
 
         await this.cardsRepository.save({
@@ -154,9 +179,13 @@ export class CardsService {
         return relation.save();
     }
 
-    public async deleteRelation(relationId: string): Promise<void> {
+    public async deleteRelation(
+        course: CourseEntity,
+        relationId: string,
+    ): Promise<void> {
         const relation = await this.relationsRepository.findOneBy({
             id: relationId,
+            course: { id: course.id },
         });
 
         if (!relation) throw new NotFoundException('Relation not found');

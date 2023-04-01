@@ -174,6 +174,15 @@ export class UserCreatingDto {
     })
     public post?: DropdownItemDto;
 
+    @ValidateNested()
+    @Type(() => DropdownItemDto)
+    @ApiProperty({
+        name: 'course',
+        description: 'Курс, на котором обучается пользователь',
+        required: true,
+    })
+    public course: DropdownItemDto;
+
     @IsEnum(Role)
     @IsOptional()
     @ApiProperty({

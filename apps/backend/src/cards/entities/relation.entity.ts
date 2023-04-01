@@ -1,4 +1,5 @@
 import { CardEntity } from '@/cards/entities/card.entity';
+import { CourseEntity } from '@/courses/course.entity';
 import { Exclude, Expose } from 'class-transformer';
 import {
     PrimaryColumn,
@@ -8,7 +9,7 @@ import {
     Entity,
 } from 'typeorm';
 
-@Entity()
+@Entity('relations')
 export class RelationEntity extends BaseEntity {
     @PrimaryColumn({
         nullable: false,
@@ -25,6 +26,14 @@ export class RelationEntity extends BaseEntity {
     @JoinColumn({ name: 'child_id' })
     @ManyToOne(() => CardEntity, { eager: true })
     public child: CardEntity;
+
+    @Exclude({ toPlainOnly: true })
+    @JoinColumn({ name: 'course_id' })
+    @ManyToOne(() => CourseEntity, (course) => course.relations, {
+        lazy: true,
+        nullable: false,
+    })
+    public course: Promise<CourseEntity>;
 
     @Expose({ toPlainOnly: true, name: 'source' })
     private getSource(): string {

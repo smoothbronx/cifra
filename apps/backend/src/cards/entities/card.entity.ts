@@ -1,19 +1,20 @@
 import { AvailabilityEntity } from '@/availability/availability.entity';
 import { CardPositionDto } from '@/cards/dto/cardPosition.dto';
 import { CardTypeEnum } from '@/shared/enums/cardType.enum';
+import { CourseEntity } from '@/courses/course.entity';
 import { Exclude, Expose } from 'class-transformer';
 import {
     PrimaryColumn,
+    JoinColumn,
     BaseEntity,
     ManyToMany,
     ManyToOne,
-    OneToMany,
     Column,
     Entity,
     Index,
 } from 'typeorm';
 
-@Entity()
+@Entity('cards')
 export class CardEntity extends BaseEntity {
     @PrimaryColumn()
     public readonly id: string;
@@ -35,6 +36,13 @@ export class CardEntity extends BaseEntity {
     public type: CardTypeEnum;
 
     @Exclude({ toPlainOnly: true })
+    @ManyToOne(() => CourseEntity, (course) => course.cards, {
+        lazy: true,
+        nullable: true,
+    })
+    public course: Promise<CourseEntity>;
+
+    @Exclude({ toPlainOnly: true })
     @Index({ unique: false })
     @ManyToOne(() => CardEntity, (parentCard) => parentCard.childs, {
         nullable: true,
@@ -44,8 +52,10 @@ export class CardEntity extends BaseEntity {
     public parent: Promise<CardEntity>;
 
     @Exclude({ toPlainOnly: true })
-    @OneToMany(() => CardEntity, (parentCard) => parentCard.parent, {
+    @JoinColumn({ name: 'course_id' })
+    @ManyToOne(() => CardEntity, (parentCard) => parentCard.parent, {
         lazy: true,
+        nullable: true,
     })
     public childs: Promise<CardEntity[]>;
 
@@ -57,7 +67,7 @@ export class CardEntity extends BaseEntity {
     @ManyToMany(
         () => AvailabilityEntity,
         (availability) => availability.opened,
-        { lazy: true, nullable: true, onDelete: 'CASCADE' },
+        { lazy: true, nullable: true },
     )
     public openedAt: AvailabilityEntity[];
 

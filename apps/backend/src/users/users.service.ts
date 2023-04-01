@@ -1,23 +1,24 @@
 import { AvailabilityService } from '@/availability/availability.service';
+import { DropdownItemDto, FilterDto } from '@/users/dto/filter.dto';
 import { UserCreatingDto, UserDto } from '@/users/dto/user.dto';
 import { CryptoService } from '@/shared/crypto/crypto.service';
 import { Any, FindOptionsWhere, Repository } from 'typeorm';
 import { BranchEntity } from '@/branches/branch.entity';
+import { CourseEntity } from '@/courses/course.entity';
 import { NameSegments } from '@/@types/NameSegments';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FilterDto } from '@/users/dto/filter.dto';
 import { UserEntity } from '@/users/user.entity';
 import { PostEntity } from '@/posts/post.entity';
 import { Role } from '@/shared/enums/Role.enum';
 import { ConfigService } from '@nestjs/config';
 import {
+    MethodNotAllowedException,
     BadRequestException,
     ConflictException,
     NotFoundException,
     Injectable,
     forwardRef,
     Inject,
-    MethodNotAllowedException,
 } from '@nestjs/common';
 
 @Injectable()
@@ -35,6 +36,8 @@ export class UsersService {
         private readonly postsRepository: Repository<PostEntity>,
         @InjectRepository(BranchEntity)
         private readonly branchesRepository: Repository<BranchEntity>,
+        @InjectRepository(CourseEntity)
+        private readonly coursesRepository: Repository<CourseEntity>,
     ) {}
 
     public async createAdmin(): Promise<void> {
@@ -44,7 +47,7 @@ export class UsersService {
         const user = await this.usersRepository.findOneBy({
             email,
         });
-        if (user) await this.usersRepository.delete({ email });
+        if (user) return;
 
         const posts = await this.postsRepository.find();
         const branches = await this.branchesRepository.find();
@@ -62,7 +65,6 @@ export class UsersService {
         });
 
         await this.usersRepository.save(admin);
-        await this.availabilityService.getInitialAvailability(admin);
     }
 
     public async createEditor(): Promise<void> {
@@ -72,7 +74,7 @@ export class UsersService {
         const user = await this.usersRepository.findOneBy({
             email,
         });
-        if (user) await this.usersRepository.delete({ email });
+        if (user) return;
 
         const posts = await this.postsRepository.find();
         const branches = await this.branchesRepository.find();
@@ -89,7 +91,6 @@ export class UsersService {
         });
 
         await this.usersRepository.save(moderator);
-        await this.availabilityService.getInitialAvailability(moderator);
     }
 
     public saveUser(user: UserEntity): Promise<UserEntity> {
@@ -123,15 +124,32 @@ export class UsersService {
             );
         } else branch = initiator.branch;
 
+        let post: PostEntity | undefined;
+        if (credentials.post) {
+            post = await this.getOrThrowBadRequest(
+                credentials.post,
+                this.postsRepository,
+                'Post not found',
+            );
+        } else post = credentials.post;
+
+        const course = await this.getOrThrowBadRequest(
+            credentials.course,
+            this.coursesRepository,
+            'Course not found',
+        );
+
         const nameSegments = this.splitFullname(credentials.fullname);
 
         const newUser = this.usersRepository.create({
             ...credentials,
             ...nameSegments,
+            course,
             branch,
+            post,
         });
 
-        await this.availabilityService.getInitialAvailability(newUser);
+        await this.availabilityService.getInitialAvailability(course, newUser);
         return await this.usersRepository.save(newUser);
     }
 
@@ -186,15 +204,16 @@ export class UsersService {
     }
 
     public async getFilteredUsers(filterDto: FilterDto): Promise<UserEntity[]> {
+        const tryGetCodes = (entities: DropdownItemDto[] | undefined) => {
+            return entities && entities.length !== 0
+                ? Any(entities.map((entity) => entity.code))
+                : undefined;
+        };
+
         const filteredUsers: UserEntity[] = await this.usersRepository.findBy({
-            branch:
-                filterDto.branches && filterDto.branches.length !== 0
-                    ? Any(filterDto.branches.map((branch) => branch.code))
-                    : undefined,
-            post:
-                filterDto.posts && filterDto.posts.length !== 0
-                    ? Any(filterDto.posts.map((post) => post.code))
-                    : undefined,
+            branch: tryGetCodes(filterDto.branches),
+            post: tryGetCodes(filterDto.posts),
+            course: tryGetCodes(filterDto.courses),
         });
 
         const nameSegments = filterDto.name?.split(' ') || [];

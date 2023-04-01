@@ -1,15 +1,18 @@
 import { CardEntity } from '@/cards/entities/card.entity';
+import { CourseEntity } from '@/courses/course.entity';
 import { UserEntity } from '@/users/user.entity';
 import {
     PrimaryGeneratedColumn,
     BaseEntity,
     ManyToMany,
+    JoinColumn,
     JoinTable,
+    ManyToOne,
     OneToOne,
     Entity,
 } from 'typeorm';
 
-@Entity()
+@Entity('availabilities')
 export class AvailabilityEntity extends BaseEntity {
     @PrimaryGeneratedColumn()
     public readonly id: number;
@@ -39,4 +42,11 @@ export class AvailabilityEntity extends BaseEntity {
         nullable: false,
     })
     public finished: CardEntity[];
+
+    @JoinColumn({ name: 'course_id' })
+    @ManyToOne(() => CourseEntity, (course) => course.availabilities, {
+        lazy: true,
+        nullable: false,
+    })
+    public course: Promise<CourseEntity>;
 }

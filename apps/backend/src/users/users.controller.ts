@@ -19,6 +19,7 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import {
+    MethodNotAllowedException,
     BadRequestException,
     ConflictException,
     NotFoundException,
@@ -32,7 +33,7 @@ import {
     Body,
     Post,
     Get,
-    MethodNotAllowedException,
+    ForbiddenException,
 } from '@nestjs/common';
 
 @ApiHeader({
@@ -79,6 +80,13 @@ export class UsersController {
     @ApiException(() => new BadRequestException('Invalid name format'), {
         description: 'Invalid name format',
     })
+    @ApiException(
+        () =>
+            new ForbiddenException(
+                'Insufficient permissions to perform this operation',
+            ),
+        { description: 'The operation is not available to the user' },
+    )
     @AcceptRoles(Role.ADMIN, Role.EDITOR)
     @HttpCode(201)
     @Post('/')
@@ -134,6 +142,13 @@ export class UsersController {
     @ApiException(() => new NotFoundException('User not found'), {
         description: 'The user being update was not found',
     })
+    @ApiException(
+        () =>
+            new ForbiddenException(
+                'Insufficient permissions to perform this operation',
+            ),
+        { description: 'The operation is not available to the user' },
+    )
     @AcceptRoles(Role.ADMIN)
     @HttpCode(204)
     @Patch('/:id/')
@@ -144,9 +159,6 @@ export class UsersController {
         await this.userService.updateUser(userId, userDto);
     }
 
-    @AcceptRoles(Role.ADMIN)
-    @HttpCode(204)
-    @Delete('/:id/')
     @ApiNoContentResponse({ description: 'The user deletion was successful' })
     @ApiException(() => new NotFoundException('User not found'), {
         description: 'The user being deleted was not found',
@@ -157,6 +169,16 @@ export class UsersController {
             description: 'The user cannot delete himself.',
         },
     )
+    @ApiException(
+        () =>
+            new ForbiddenException(
+                'Insufficient permissions to perform this operation',
+            ),
+        { description: 'The operation is not available to the user' },
+    )
+    @AcceptRoles(Role.ADMIN)
+    @HttpCode(204)
+    @Delete('/:id/')
     public async deleteUser(
         @AuthUser() initiator: UserEntity,
         @Param('id', ParseIntPipe) userId: number,
