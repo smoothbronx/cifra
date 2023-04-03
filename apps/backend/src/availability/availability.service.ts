@@ -11,8 +11,8 @@ import { Repository } from 'typeorm';
 import {
     BadRequestException,
     forwardRef,
-    Injectable,
     Inject,
+    Injectable,
 } from '@nestjs/common';
 import { CourseEntity } from '@/courses/course.entity';
 
@@ -136,6 +136,10 @@ export class AvailabilityService {
         user: UserEntity,
         card: CardEntity,
     ): Promise<CardStatusEnum> {
+        if ([Role.ADMIN, Role.EDITOR].includes(user.role)) {
+            return CardStatusEnum.OPENED;
+        }
+
         const availability: AvailabilityEntity =
             await this.availabilityRepository.findOneByOrFail({
                 id: user.cards.id,
@@ -226,18 +230,18 @@ export class AvailabilityService {
         card: CardEntity,
         options: { isFirst: boolean },
     ): Promise<void> {
+        // Пользователям роли редактора и админа доступны все карты
+        if ([Role.EDITOR, Role.ADMIN].includes(user.role)) {
+            return;
+        }
+
         const availability: AvailabilityEntity =
             await this.availabilityRepository.findOneByOrFail({
                 id: user.cards.id,
             });
 
-        // Пользователям роли редактора и админа доступны все карты
-        if ([Role.EDITOR, Role.ADMIN].includes(user.role)) {
-            availability.opened.push(card);
-        }
-
         // Если карта первая, то она автоматически является открытой
-        else if (options.isFirst) {
+        if (options.isFirst) {
             availability.opened.push(card);
         } else {
             availability.closed.push(card);

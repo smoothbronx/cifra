@@ -1,39 +1,38 @@
+import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
+import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
+import { AcceptRoles } from '@/shared/access/acceptRoles.decorator';
+import { AuthUser } from '@/shared/decorators/authUser.decorator';
+import { CoursesService } from '@/courses/courses.service';
+import { CourseEntity } from '@/courses/course.entity';
+import { JwtAuthGuard } from '@/shared/jwt/jwt.guard';
+import { CourseDto } from '@/courses/dto/course.dto';
+import { UserEntity } from '@/users/user.entity';
+import { Role } from '@/shared/enums/Role.enum';
+import {
+    ApiUnauthorizedResponse,
+    ApiNoContentResponse,
+    ApiCreatedResponse,
+    ApiOkResponse,
+    ApiBearerAuth,
+    ApiHeader,
+    ApiTags,
+} from '@nestjs/swagger';
 import {
     BadRequestException,
-    Body,
-    ConflictException,
-    Controller,
-    Delete,
     ForbiddenException,
-    Get,
-    HttpCode,
+    ConflictException,
     NotFoundException,
-    Param,
     ParseIntPipe,
-    Patch,
-    Post,
+    Controller,
     UseGuards,
+    HttpCode,
+    Delete,
+    Param,
+    Patch,
+    Body,
+    Post,
+    Get,
 } from '@nestjs/common';
-import { AcceptRoles } from '@/shared/access/acceptRoles.decorator';
-import { Role } from '@/shared/enums/Role.enum';
-import { AuthUser } from '@/shared/decorators/authUser.decorator';
-import { UserEntity } from '@/users/user.entity';
-import { CourseEntity } from '@/courses/course.entity';
-import { CoursesService } from '@/courses/courses.service';
-import { CourseDto } from '@/courses/dto/course.dto';
-import { JwtAuthGuard } from '@/shared/jwt/jwt.guard';
-import {
-    ApiBearerAuth,
-    ApiCreatedResponse,
-    ApiHeader,
-    ApiNoContentResponse,
-    ApiOkResponse,
-    ApiTags,
-    ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
-import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
-import { RelationDto } from '@/cards/dto/relation.dto';
-import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
 
 @ApiHeader({
     name: 'Authorization',
@@ -54,7 +53,7 @@ export class CoursesController {
 
     @ApiOkResponse({
         description: 'Return course',
-        type: RelationDto,
+        type: CourseDto,
     })
     @ApiException(() => new BadRequestException('Course not found'), {
         description: 'The course was not found',
@@ -93,7 +92,7 @@ export class CoursesController {
 
     @ApiCreatedResponse({
         description: 'Course successfully created',
-        type: RelationDto,
+        type: CourseDto,
     })
     @ApiException(() => new ConflictException('Course exists'), {
         description: 'Course already exists',
