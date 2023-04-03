@@ -42,6 +42,7 @@ import {
 import { CourseInterceptor } from '@/shared/interceptors/course.interceptor';
 import { CourseEntity } from '@/courses/course.entity';
 import { Course } from '@/shared/decorators/course.decorator';
+import { instanceToPlain } from 'class-transformer';
 
 @ApiHeader({
     name: 'Authorization',
@@ -255,7 +256,9 @@ export class CardsController {
         @Body() cardDto: CardDto,
     ): Promise<CardDto> {
         const card = await this.cardsService.createCard(course, cardDto);
-        return this.availabilityService.getAugmentedCard(user, card);
+        return instanceToPlain(
+            this.availabilityService.getAugmentedCard(user, card),
+        ) as CardDto;
     }
 
     @ApiNoContentResponse({ description: 'The card deletion was successful' })
