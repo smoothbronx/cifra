@@ -1,11 +1,14 @@
 import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
 import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
+import { CourseInterceptor } from '@/shared/interceptors/course.interceptor';
 import { AvailabilityService } from '@/availability/availability.service';
 import { CourseAccessGuard } from '@/shared/guards/courseAccess.guard';
 import { AcceptRoles } from '@/shared/access/acceptRoles.decorator';
 import { RelationEntity } from '@/cards/entities/relation.entity';
 import { AuthUser } from '@/shared/decorators/authUser.decorator';
 import { CardStatusEnum } from '@/shared/enums/cardStatus.enum';
+import { Course } from '@/shared/decorators/course.decorator';
+import { CourseEntity } from '@/courses/course.entity';
 import { RelationDto } from '@/cards/dto/relation.dto';
 import { JwtAuthGuard } from '@/shared/jwt/jwt.guard';
 import { CardsService } from '@/cards/cards.service';
@@ -14,8 +17,10 @@ import { Role } from '@/shared/enums/Role.enum';
 import { CardDto } from '@/cards/dto/card.dto';
 import {
     BadRequestException,
+    ForbiddenException,
     NotFoundException,
     ConflictException,
+    UseInterceptors,
     Controller,
     UseGuards,
     HttpCode,
@@ -25,8 +30,6 @@ import {
     Body,
     Post,
     Get,
-    UseInterceptors,
-    ForbiddenException,
 } from '@nestjs/common';
 import {
     ApiUnauthorizedResponse,
@@ -39,10 +42,6 @@ import {
     ApiTags,
     ApiParam,
 } from '@nestjs/swagger';
-import { CourseInterceptor } from '@/shared/interceptors/course.interceptor';
-import { CourseEntity } from '@/courses/course.entity';
-import { Course } from '@/shared/decorators/course.decorator';
-import { instanceToPlain } from 'class-transformer';
 
 @ApiHeader({
     name: 'Authorization',
@@ -256,9 +255,7 @@ export class CardsController {
         @Body() cardDto: CardDto,
     ): Promise<CardDto> {
         const card = await this.cardsService.createCard(course, cardDto);
-        return instanceToPlain(
-            this.availabilityService.getAugmentedCard(user, card),
-        ) as CardDto;
+        return this.availabilityService.getAugmentedCard(user, card);
     }
 
     @ApiNoContentResponse({ description: 'The card deletion was successful' })

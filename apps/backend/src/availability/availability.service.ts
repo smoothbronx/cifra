@@ -1,8 +1,9 @@
 import { AvailabilityEntity } from '@/availability/availability.entity';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { CardStatusEnum } from '@/shared/enums/cardStatus.enum';
 import { CardEntity } from '@/cards/entities/card.entity';
 import { UsersService } from '@/users/users.service';
-import { instanceToPlain } from 'class-transformer';
+import { CourseEntity } from '@/courses/course.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '@/users/user.entity';
 import { Role } from '@/shared/enums/Role.enum';
@@ -11,10 +12,9 @@ import { Repository } from 'typeorm';
 import {
     BadRequestException,
     forwardRef,
-    Inject,
     Injectable,
+    Inject,
 } from '@nestjs/common';
-import { CourseEntity } from '@/courses/course.entity';
 
 @Injectable()
 export class AvailabilityService {
@@ -63,7 +63,7 @@ export class AvailabilityService {
         user: UserEntity,
         card: CardEntity,
     ): Promise<CardDto> {
-        const plainCard = instanceToPlain(card) as CardDto;
+        const plainCard = plainToInstance(CardDto, instanceToPlain(card));
         const cardStatus = await this.getCardStatus(user, card);
 
         plainCard.data.status = cardStatus;

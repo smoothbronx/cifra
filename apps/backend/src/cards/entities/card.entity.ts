@@ -11,39 +11,33 @@ import {
     ManyToOne,
     Column,
     Entity,
-    Index,
 } from 'typeorm';
 
+@Exclude({ toPlainOnly: true })
 @Entity('cards')
 export class CardEntity extends BaseEntity {
+    @Expose()
     @PrimaryColumn()
     public readonly id: string;
 
-    @Exclude({ toPlainOnly: true })
     @Column({ nullable: false, name: 'position_x' })
     public positionX: number;
 
-    @Exclude({ toPlainOnly: true })
     @Column({ nullable: false, name: 'position_y' })
     public positionY: number;
 
-    @Exclude({ toPlainOnly: true })
     @Column({ nullable: false, name: 'label' })
     public label: string;
 
-    @Exclude({ toPlainOnly: true })
     @Column({ nullable: false, name: 'type' })
     public type: CardTypeEnum;
 
-    @Exclude({ toPlainOnly: true })
     @ManyToOne(() => CourseEntity, (course) => course.cards, {
         lazy: true,
         nullable: true,
     })
     public course: Promise<CourseEntity>;
 
-    @Exclude({ toPlainOnly: true })
-    @Index({ unique: false })
     @ManyToOne(() => CardEntity, (parentCard) => parentCard.childs, {
         nullable: true,
         onDelete: 'CASCADE',
@@ -51,7 +45,6 @@ export class CardEntity extends BaseEntity {
     })
     public parent: Promise<CardEntity>;
 
-    @Exclude({ toPlainOnly: true })
     @JoinColumn({ name: 'course_id' })
     @ManyToOne(() => CardEntity, (parentCard) => parentCard.parent, {
         lazy: true,
@@ -59,11 +52,9 @@ export class CardEntity extends BaseEntity {
     })
     public childs: Promise<CardEntity[]>;
 
-    @Exclude({ toPlainOnly: true })
     @Column({ type: 'jsonb', nullable: true, name: 'content' })
     public content: any;
 
-    @Exclude({ toPlainOnly: true })
     @ManyToMany(
         () => AvailabilityEntity,
         (availability) => availability.opened,
@@ -71,7 +62,6 @@ export class CardEntity extends BaseEntity {
     )
     public openedAt: AvailabilityEntity[];
 
-    @Exclude({ toPlainOnly: true })
     @ManyToMany(
         () => AvailabilityEntity,
         (availability) => availability.closed,
@@ -79,7 +69,6 @@ export class CardEntity extends BaseEntity {
     )
     public closedAt: AvailabilityEntity[];
 
-    @Exclude({ toPlainOnly: true })
     @ManyToMany(
         () => AvailabilityEntity,
         (availability) => availability.finished,

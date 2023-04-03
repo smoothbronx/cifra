@@ -9,14 +9,14 @@ import { CardDto } from '@/cards/dto/card.dto';
 import { Repository } from 'typeorm';
 import { v4 as uuid4 } from 'uuid';
 import {
-    MethodNotAllowedException,
     BadRequestException,
     ConflictException,
-    NotFoundException,
-    HttpException,
-    Injectable,
     forwardRef,
+    HttpException,
     Inject,
+    Injectable,
+    MethodNotAllowedException,
+    NotFoundException,
 } from '@nestjs/common';
 import { CourseEntity } from '@/courses/course.entity';
 
@@ -32,7 +32,9 @@ export class CardsService {
     ) {}
 
     public getCards(course: CourseEntity): Promise<CardEntity[]> {
-        return this.cardsRepository.findBy({ course: { id: course.id } });
+        return this.cardsRepository.findBy({
+            course: { id: course.id },
+        });
     }
 
     public async setCardStatus(
@@ -65,21 +67,19 @@ export class CardsService {
         cardDto: CardDto,
     ): Promise<CardEntity> {
         const cardsCount = await this.cardsRepository.count();
-
-        let card = this.cardsRepository.create({
+        const card = this.cardsRepository.create({
             id: uuid4().split('-').splice(0, 3).join(''),
             ...cardDto.toPlain(),
             childs: Promise.resolve([]),
             content: cardDto.data.content,
-            course: Promise.resolve(course),
         });
-        card = await this.cardsRepository.save(card);
+        card.course = Promise.resolve(course);
 
         await this.availabilityService.attachCardToUsers(card, {
             isFirst: !cardsCount,
         });
 
-        return card;
+        return card.save();
     }
 
     public async deleteCard(
