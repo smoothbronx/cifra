@@ -93,7 +93,7 @@ export class CardsService {
 
         if (!card) throw new NotFoundException('Card not found');
 
-        if ((await card.childs).length > 0)
+        if (((await card.childs) || []).length > 0)
             throw new MethodNotAllowedException('The card has child');
 
         await this.deleteCardRelations(card);
