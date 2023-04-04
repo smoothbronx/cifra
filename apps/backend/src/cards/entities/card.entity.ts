@@ -20,10 +20,10 @@ export class CardEntity extends BaseEntity {
     @PrimaryColumn()
     public readonly id: string;
 
-    @Column({ type: 'float', nullable: false, name: 'position_x' })
+    @Column({ type: 'double precision', nullable: false, name: 'position_x' })
     public positionX: number;
 
-    @Column({ type: 'float', nullable: false, name: 'position_y' })
+    @Column({ type: 'double precision', nullable: false, name: 'position_y' })
     public positionY: number;
 
     @Column({ nullable: false, name: 'label' })
