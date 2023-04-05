@@ -89,6 +89,7 @@ export class CardEntity extends BaseEntity {
         return {
             label: this.label,
             content: this.content,
+            type: this.type,
         };
     }
 

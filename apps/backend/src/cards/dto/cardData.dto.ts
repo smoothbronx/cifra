@@ -18,7 +18,7 @@ export class CardDataDto {
     @ApiProperty({
         name: 'type',
         description: 'Card type',
-        example: 'textarea',
+        example: 'text',
     })
     public type: CardTypeEnum;
 
