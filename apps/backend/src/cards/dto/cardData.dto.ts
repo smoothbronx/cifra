@@ -43,3 +43,22 @@ export class CardDataDto {
         return this.content.toString();
     }
 }
+
+export class CardDataUpdateDto {
+    @IsString()
+    @ApiProperty({
+        name: 'label',
+        description: 'Label in the card',
+        required: true,
+        example: 'Lesson 1',
+    })
+    public label: string;
+
+    @ApiProperty({
+        name: 'content',
+        description: 'Content in the card',
+        required: true,
+        example: { ping: 'pong' },
+    })
+    public content: any;
+}

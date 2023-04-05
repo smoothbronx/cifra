@@ -14,7 +14,7 @@ import { JwtAuthGuard } from '@/shared/jwt/jwt.guard';
 import { CardsService } from '@/cards/cards.service';
 import { UserEntity } from '@/users/user.entity';
 import { Role } from '@/shared/enums/Role.enum';
-import { CardDto } from '@/cards/dto/card.dto';
+import { CardDto, CardUpdateDto } from '@/cards/dto/card.dto';
 import {
     BadRequestException,
     Body,
@@ -274,7 +274,7 @@ export class CardsController {
     public async updateCard(
         @Course() course: CourseEntity,
         @Param('id') cardId: string,
-        @Body() cardDto: CardDto,
+        @Body() cardDto: CardUpdateDto,
     ) {
         await this.cardsService.updateCard(course, cardId, cardDto);
     }

@@ -5,7 +5,7 @@ import { CardEntity } from '@/cards/entities/card.entity';
 import { RelationDto } from '@/cards/dto/relation.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '@/users/user.entity';
-import { CardDto } from '@/cards/dto/card.dto';
+import { CardDto, CardUpdateDto } from '@/cards/dto/card.dto';
 import { Repository } from 'typeorm';
 import { v4 as uuid4 } from 'uuid';
 import {
@@ -90,7 +90,7 @@ export class CardsService {
     public async updateCard(
         course: CourseEntity,
         cardId: string,
-        cardDto: CardDto,
+        cardDto: CardUpdateDto,
     ): Promise<void> {
         const card = await this.cardsRepository.findOneBy({
             id: cardId,

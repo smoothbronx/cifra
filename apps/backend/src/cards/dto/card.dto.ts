@@ -1,7 +1,7 @@
 import { Exclude, instanceToPlain, Type } from 'class-transformer';
 import { CardStatusEnum } from '@/shared/enums/cardStatus.enum';
 import { CardTypeEnum } from '@/shared/enums/cardType.enum';
-import { CardDataDto } from '@/cards/dto/cardData.dto';
+import { CardDataDto, CardDataUpdateDto } from '@/cards/dto/cardData.dto';
 import { CardPositionDto } from './cardPosition.dto';
 import { IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -47,6 +47,35 @@ export class CardDto {
         description: 'Card class name',
     })
     public className: CardTypeEnum | CardStatusEnum;
+
+    @Exclude({ toPlainOnly: true })
+    public toPlain() {
+        return {
+            positionX: this.position.x,
+            positionY: this.position.y,
+            ...instanceToPlain(this.data),
+        };
+    }
+}
+
+export class CardUpdateDto {
+    @Type(() => CardPositionDto)
+    @ValidateNested()
+    @ApiProperty({
+        required: true,
+        name: 'position',
+        description: 'Card position on the canvas',
+    })
+    public position: CardPositionDto;
+
+    @Type(() => CardDataUpdateDto)
+    @ValidateNested()
+    @ApiProperty({
+        required: true,
+        name: 'data',
+        description: 'Card data',
+    })
+    public data: CardDataUpdateDto;
 
     @Exclude({ toPlainOnly: true })
     public toPlain() {
