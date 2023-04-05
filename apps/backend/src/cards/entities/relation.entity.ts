@@ -31,7 +31,7 @@ export class RelationEntity extends BaseEntity {
     @JoinColumn({ name: 'course_id' })
     @ManyToOne(() => CourseEntity, (course) => course.relations, {
         lazy: true,
-        nullable: false,
+        nullable: true,
     })
     public course: Promise<CourseEntity>;
 

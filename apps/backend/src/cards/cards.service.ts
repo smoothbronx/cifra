@@ -185,12 +185,16 @@ export class CardsService {
             new BadRequestException('Target card not found'),
         );
 
-        const relation = this.relationsRepository.create({
-            id: relationDto.id,
-            parent: sourceCard,
-            child: targetCard,
-            course: Promise.resolve(course),
-        });
+        const relation = await this.relationsRepository
+            .create({
+                id: relationDto.id,
+                parent: sourceCard,
+                child: targetCard,
+            })
+            .save();
+
+        course.relations.push(relation);
+        await course.save();
 
         await this.cardsRepository.save({
             ...targetCard,
@@ -205,7 +209,7 @@ export class CardsService {
             childs: Promise.resolve(sourceChilds),
         });
 
-        return relation.save();
+        return relation;
     }
 
     public async deleteRelation(
