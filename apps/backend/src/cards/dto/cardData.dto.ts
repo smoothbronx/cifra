@@ -61,4 +61,12 @@ export class CardDataUpdateDto {
         example: { ping: 'pong' },
     })
     public content: any;
+
+    @IsEnum(CardTypeEnum)
+    @ApiProperty({
+        name: 'type',
+        description: 'Card type',
+        example: 'text',
+    })
+    public type: CardTypeEnum;
 }
