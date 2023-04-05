@@ -91,4 +91,9 @@ export class CardEntity extends BaseEntity {
             content: this.content,
         };
     }
+
+    @Expose({ name: 'type', toPlainOnly: true })
+    private getType() {
+        return 'cardNode';
+    }
 }

@@ -3,7 +3,7 @@ import { CardStatusEnum } from '@/shared/enums/cardStatus.enum';
 import { CardTypeEnum } from '@/shared/enums/cardType.enum';
 import { CardDataDto } from '@/cards/dto/cardData.dto';
 import { CardPositionDto } from './cardPosition.dto';
-import { ValidateNested } from 'class-validator';
+import { IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CardDto {
@@ -25,6 +25,8 @@ export class CardDto {
     @ValidateNested()
     public position: CardPositionDto;
 
+    @Type(() => CardDataDto)
+    @ValidateNested()
     @ApiProperty({
         required: true,
         name: 'data',
@@ -32,13 +34,19 @@ export class CardDto {
     })
     public data: CardDataDto;
 
+    @IsString()
+    @ApiProperty({
+        required: true,
+        description: 'Constant type',
+    })
+    public type = 'cardNode';
+
     @ApiProperty({
         readOnly: true,
         name: 'className',
         description: 'Card class name',
     })
-    @Exclude({ toPlainOnly: true })
-    public className?: CardTypeEnum | CardStatusEnum;
+    public className: CardTypeEnum | CardStatusEnum;
 
     @Exclude({ toPlainOnly: true })
     public toPlain() {

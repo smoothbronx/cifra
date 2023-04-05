@@ -1,8 +1,7 @@
-import { IsNumber, IsPositive } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber } from 'class-validator';
 
 export class CardPositionDto {
-    @IsPositive()
     @IsNumber()
     @ApiProperty({
         name: 'x',
@@ -12,13 +11,12 @@ export class CardPositionDto {
     })
     public x: number;
 
+    @IsNumber()
     @ApiProperty({
         name: 'y',
         description: 'y coordinate of canvas',
         required: true,
         example: 100,
     })
-    @IsPositive()
-    @IsNumber()
     public y: number;
 }

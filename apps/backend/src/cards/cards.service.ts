@@ -63,23 +63,50 @@ export class CardsService {
     }
 
     public async createCard(
+        user: UserEntity,
         course: CourseEntity,
         cardDto: CardDto,
-    ): Promise<CardEntity> {
+    ): Promise<CardDto> {
         const cardsCount = await this.cardsRepository.count();
-        const card = this.cardsRepository.create({
-            id: uuid4().split('-').splice(0, 3).join(''),
-            ...cardDto.toPlain(),
-            childs: Promise.resolve([]),
-            content: cardDto.data.content,
-        });
-        card.course = Promise.resolve(course);
+        const card = await this.cardsRepository
+            .create({
+                id: uuid4().split('-').splice(0, 3).join(''),
+                ...cardDto.toPlain(),
+                childs: Promise.resolve([]),
+                content: cardDto.data.content,
+            })
+            .save();
+
+        course.cards.push(card);
+        await course.save();
 
         await this.availabilityService.attachCardToUsers(card, {
             isFirst: !cardsCount,
         });
 
-        return card.save();
+        return this.availabilityService.getAugmentedCard(user, card);
+    }
+
+    public async updateCard(
+        course: CourseEntity,
+        cardId: string,
+        cardDto: CardDto,
+    ): Promise<void> {
+        const card = await this.cardsRepository.findOneBy({
+            id: cardId,
+            course: {
+                id: course.id,
+            },
+        });
+
+        if (!card) {
+            throw new NotFoundException('Card not found');
+        }
+
+        await this.cardsRepository.update(
+            { id: card.id },
+            { ...cardDto.toPlain(), content: cardDto.data.content },
+        );
     }
 
     public async deleteCard(
@@ -125,6 +152,7 @@ export class CardsService {
             id: relationId,
             course: { id: course.id },
         });
+
         if (!relation) throw exception;
         return relation;
     }
@@ -135,6 +163,7 @@ export class CardsService {
     ): Promise<RelationEntity> {
         const relationExists = await this.relationsRepository.exist({
             where: {
+                id: relationDto.id,
                 parent: { id: relationDto.source },
                 child: { id: relationDto.target },
                 course: { id: course.id },
@@ -157,7 +186,7 @@ export class CardsService {
         );
 
         const relation = this.relationsRepository.create({
-            id: uuid4().split('-').splice(0, 3).join(''),
+            id: relationDto.id,
             parent: sourceCard,
             child: targetCard,
             course: Promise.resolve(course),
@@ -168,7 +197,7 @@ export class CardsService {
             parent: Promise.resolve(sourceCard),
         });
 
-        const sourceChilds = await sourceCard.childs;
+        const sourceChilds: CardEntity[] = (await sourceCard.childs) || [];
         sourceChilds.push(targetCard);
 
         await this.cardsRepository.save({

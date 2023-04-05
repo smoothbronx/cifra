@@ -2,8 +2,10 @@ import { CardStatusEnum } from '@/shared/enums/cardStatus.enum';
 import { CardTypeEnum } from '@/shared/enums/cardType.enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+import { IsEnum, IsString } from 'class-validator';
 
 export class CardDataDto {
+    @IsString()
     @ApiProperty({
         name: 'label',
         description: 'Label in the card',
@@ -12,6 +14,7 @@ export class CardDataDto {
     })
     public label: string;
 
+    @IsEnum(CardTypeEnum)
     @ApiProperty({
         name: 'type',
         description: 'Card type',
@@ -27,6 +30,7 @@ export class CardDataDto {
     })
     public content: any;
 
+    @IsEnum(CardStatusEnum)
     @ApiProperty({
         name: 'status',
         description: 'Status of the card',

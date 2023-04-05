@@ -17,30 +17,31 @@ import { Role } from '@/shared/enums/Role.enum';
 import { CardDto } from '@/cards/dto/card.dto';
 import {
     BadRequestException,
-    ForbiddenException,
-    NotFoundException,
-    ConflictException,
-    UseInterceptors,
-    Controller,
-    UseGuards,
-    HttpCode,
-    Delete,
-    Inject,
-    Param,
     Body,
-    Post,
+    ConflictException,
+    Controller,
+    Delete,
+    ForbiddenException,
     Get,
+    HttpCode,
+    Inject,
+    NotFoundException,
+    Param,
+    Patch,
+    Post,
+    UseGuards,
+    UseInterceptors,
 } from '@nestjs/common';
 import {
-    ApiUnauthorizedResponse,
-    ApiNoContentResponse,
-    ApiCreatedResponse,
     ApiBearerAuth,
-    ApiOkResponse,
-    ApiHeader,
     ApiBody,
-    ApiTags,
+    ApiCreatedResponse,
+    ApiHeader,
+    ApiNoContentResponse,
+    ApiOkResponse,
     ApiParam,
+    ApiTags,
+    ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
 @ApiHeader({
@@ -254,8 +255,28 @@ export class CardsController {
         @AuthUser() user: UserEntity,
         @Body() cardDto: CardDto,
     ): Promise<CardDto> {
-        const card = await this.cardsService.createCard(course, cardDto);
-        return this.availabilityService.getAugmentedCard(user, card);
+        return this.cardsService.createCard(user, course, cardDto);
+    }
+
+    @ApiNoContentResponse({
+        description: 'Card successfully updated',
+    })
+    @ApiException(() => new NotFoundException('Card not found'), {
+        description: 'Card not found',
+    })
+    @ApiParam({
+        name: 'cid',
+        description: 'Course ID',
+    })
+    @HttpCode(204)
+    @AcceptRoles(Role.EDITOR, Role.ADMIN)
+    @Patch('/:id/')
+    public async updateCard(
+        @Course() course: CourseEntity,
+        @Param('id') cardId: string,
+        @Body() cardDto: CardDto,
+    ) {
+        await this.cardsService.updateCard(course, cardId, cardDto);
     }
 
     @ApiNoContentResponse({ description: 'The card deletion was successful' })

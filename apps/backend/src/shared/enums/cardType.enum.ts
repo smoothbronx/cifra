@@ -3,4 +3,5 @@ export enum CardTypeEnum {
     RADIO = 'radio',
     TEXTAREA = 'textarea',
     MATCH = 'match',
+    TEXT = 'text',
 }

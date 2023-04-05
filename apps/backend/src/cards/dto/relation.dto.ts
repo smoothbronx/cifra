@@ -5,7 +5,6 @@ export class RelationDto {
     @ApiProperty({
         name: 'id',
         description: 'Id of the relation',
-        readOnly: true,
         example: 'rel1-2',
     })
     public id: string;
