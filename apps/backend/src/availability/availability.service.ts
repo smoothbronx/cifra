@@ -99,9 +99,10 @@ export class AvailabilityService {
             course: { id: course.id },
         });
 
-        user.cards = this.availabilityRepository.create({
-            course: Promise.resolve(course),
-        });
+        user.cards = this.availabilityRepository.create();
+        user.cards.course = Promise.resolve(course);
+        await user.cards.save();
+
         await this.usersService.saveUser(user);
 
         if (cards.length > 0) {
