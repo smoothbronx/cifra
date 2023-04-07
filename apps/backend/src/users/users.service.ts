@@ -49,7 +49,8 @@ export class UsersService {
         const adminExists = await this.usersRepository.exist({
             where: { email, role: Role.ADMIN },
         });
-        if (!adminExists) {
+
+        if (adminExists) {
             this.logger.debug(`Admin with email<${email}> already exists`);
             this.logger.debug('Admin initializing skipped');
             return;
@@ -81,7 +82,7 @@ export class UsersService {
         const editorExists = await this.usersRepository.exist({
             where: { email, role: Role.EDITOR },
         });
-        if (!editorExists) {
+        if (editorExists) {
             this.logger.debug(`Editor with email<${email}> already exists`);
             this.logger.debug('Editor initializing skipped');
             return;
