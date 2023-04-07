@@ -178,7 +178,6 @@ export class UsersService {
             }
 
             user.branch = branch;
-            await user.save();
         }
 
         if (credentials.role === Role.USER) {
