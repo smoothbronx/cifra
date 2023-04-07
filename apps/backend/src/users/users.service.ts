@@ -180,9 +180,10 @@ export class UsersService {
             if (!credentials.course)
                 this.creatingErrorWithReason(errorReasons.course.mustBeDefined);
 
-            const course = await this.coursesRepository.findOneBy(
-                credentials.course,
-            );
+            const course = await this.coursesRepository.findOneBy({
+                id: credentials.course.code,
+                name: credentials.course.name,
+            });
 
             if (!course)
                 this.creatingErrorWithReason(errorReasons.course.notFound);
