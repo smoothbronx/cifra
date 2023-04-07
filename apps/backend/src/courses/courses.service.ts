@@ -35,7 +35,7 @@ export class CoursesService {
             return course;
         }
 
-        if (user.course.id !== courseId) {
+        if (user.course?.id !== courseId) {
             throw new ForbiddenException('Access to this course is denied');
         }
 
@@ -47,7 +47,7 @@ export class CoursesService {
             return true;
         }
 
-        return user.course.id === courseId;
+        return user.course?.id === courseId;
     }
 
     public async deleteCourse(courseId: number) {

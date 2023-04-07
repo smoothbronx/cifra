@@ -12,18 +12,20 @@ import { PostEntity } from '@/posts/post.entity';
 import { Role } from '@/shared/enums/Role.enum';
 import { ConfigService } from '@nestjs/config';
 import {
-    MethodNotAllowedException,
     BadRequestException,
     ConflictException,
-    NotFoundException,
-    Injectable,
     forwardRef,
     Inject,
+    Injectable,
+    Logger,
+    MethodNotAllowedException,
+    NotFoundException,
 } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
     private readonly cryptoService = CryptoService;
+    private readonly logger = new Logger(UsersService.name);
 
     constructor(
         @Inject(ConfigService)
@@ -44,10 +46,14 @@ export class UsersService {
         const email = this.configService.getOrThrow('ADMIN_LOGIN');
         const password = this.configService.getOrThrow('ADMIN_PASSWORD');
 
-        const user = await this.usersRepository.findOneBy({
-            email,
+        const adminExists = await this.usersRepository.exist({
+            where: { email, role: Role.ADMIN },
         });
-        if (user) return;
+        if (!adminExists) {
+            this.logger.debug(`Admin with email<${email}> already exists`);
+            this.logger.debug('Admin initializing skipped');
+            return;
+        }
 
         const posts = await this.postsRepository.find();
         const branches = await this.branchesRepository.find();
@@ -65,21 +71,26 @@ export class UsersService {
         });
 
         await this.usersRepository.save(admin);
+        this.logger.debug('Admin initializing complete');
     }
 
     public async createEditor(): Promise<void> {
         const email = this.configService.getOrThrow('EDITOR_LOGIN');
         const password = this.configService.getOrThrow('EDITOR_PASSWORD');
 
-        const user = await this.usersRepository.findOneBy({
-            email,
+        const editorExists = await this.usersRepository.exist({
+            where: { email, role: Role.EDITOR },
         });
-        if (user) return;
+        if (!editorExists) {
+            this.logger.debug(`Editor with email<${email}> already exists`);
+            this.logger.debug('Editor initializing skipped');
+            return;
+        }
 
         const posts = await this.postsRepository.find();
         const branches = await this.branchesRepository.find();
 
-        const moderator = this.usersRepository.create({
+        const editor = this.usersRepository.create({
             email,
             password: this.cryptoService.generateHashFromPassword(password),
             role: Role.EDITOR,
@@ -90,7 +101,8 @@ export class UsersService {
             post: posts.at(0),
         });
 
-        await this.usersRepository.save(moderator);
+        await editor.save();
+        this.logger.debug('Editor initializing complete');
     }
 
     public saveUser(user: UserEntity): Promise<UserEntity> {
@@ -101,28 +113,35 @@ export class UsersService {
         initiator: UserEntity,
         credentials: UserCreatingDto,
     ): Promise<UserEntity> {
+        const errorReasons = {
+            branch: {
+                notFound: 'Branch not found',
+                // TODO: Перенести в валидатор DTO
+                mustBeDefined: 'Branch must be defined',
+            },
+            course: {
+                notFound: 'Course not found',
+                // TODO: Перенести в валидатор DTO
+                mustBeDefined: 'Course must be defined',
+            },
+            user: {
+                conflict: 'User already exists',
+            },
+        };
+
         this.validatePayload(initiator, credentials);
 
-        const user = await this.usersRepository.exist({
+        const userExists = await this.usersRepository.exist({
             where: { email: credentials.email },
         });
 
-        if (user) {
-            throw new ConflictException('User already exists');
+        if (userExists) {
+            throw new ConflictException(errorReasons.user.conflict);
         }
 
         credentials.password = this.cryptoService.generateHashFromPassword(
             credentials.password,
         );
-
-        let branch: BranchEntity;
-        if (credentials.branch) {
-            branch = await this.getOrThrowBadRequest(
-                credentials.branch,
-                this.branchesRepository,
-                'Branch not found',
-            );
-        } else branch = initiator.branch;
 
         let post: PostEntity | undefined;
         if (credentials.post) {
@@ -133,26 +152,57 @@ export class UsersService {
             );
         } else post = credentials.post;
 
-        const course = await this.getOrThrowBadRequest(
-            credentials.course,
-            this.coursesRepository,
-            'Course not found',
-        );
-
         const nameSegments = this.splitFullname(credentials.fullname);
 
-        const newUser = await this.usersRepository
-            .create({
-                ...credentials,
-                ...nameSegments,
-                course,
-                branch,
-                post,
-            })
-            .save();
+        const user = await this.usersRepository.create({
+            ...credentials,
+            ...nameSegments,
+            post,
+        });
 
-        await this.availabilityService.getInitialAvailability(course, newUser);
-        return newUser.save();
+        if ([Role.USER, Role.HEAD].includes(credentials.role)) {
+            if (!credentials.branch) {
+                this.logger.error('Failed to create user. Reason:');
+                throw new BadRequestException(
+                    errorReasons.branch.mustBeDefined,
+                );
+            }
+            const branch = await this.branchesRepository.findOneBy(
+                credentials.branch,
+            );
+
+            if (!branch) {
+                this.logger.error('Failed to create user. Reason:');
+                throw new BadRequestException(errorReasons.branch.notFound);
+            }
+
+            user.branch = branch;
+            await user.save();
+        }
+
+        if (credentials.role === Role.USER) {
+            if (!credentials.course) {
+                this.logger.error('Failed to create user. Reason:');
+                throw new BadRequestException(
+                    errorReasons.course.mustBeDefined,
+                );
+            }
+
+            const course = await this.coursesRepository.findOneBy(
+                credentials.course,
+            );
+
+            if (!course) {
+                this.logger.error('Failed to create user. Reason:');
+                throw new BadRequestException(errorReasons.course.notFound);
+            }
+
+            user.course = course;
+            await user.save();
+            await this.availabilityService.getInitialAvailability(course, user);
+        }
+
+        return user.save();
     }
 
     private validatePayload(

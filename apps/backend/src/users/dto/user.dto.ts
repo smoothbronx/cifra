@@ -178,10 +178,10 @@ export class UserCreatingDto {
     @Type(() => DropdownItemDto)
     @ApiProperty({
         name: 'course',
-        description: 'Курс, на котором обучается пользователь',
-        required: true,
+        description: 'Курс, к которому привязан пользователь',
+        required: false,
     })
-    public course: DropdownItemDto;
+    public course?: DropdownItemDto;
 
     @IsEnum(Role)
     @IsOptional()

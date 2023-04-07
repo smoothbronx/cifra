@@ -69,7 +69,7 @@ export class UserEntity extends BaseEntity {
         eager: true,
         nullable: true,
     })
-    public course: CourseEntity;
+    public course?: CourseEntity;
 
     @Exclude({ toPlainOnly: true })
     @Column({ nullable: true, name: 'refresh_token' })
