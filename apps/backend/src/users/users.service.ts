@@ -52,7 +52,7 @@ export class UsersService {
 
         if (adminExists) {
             this.logger.debug(`Admin with email<${email}> already exists`);
-            this.logger.debug('Admin initializing skipped');
+            this.logger.log('Admin initializing skipped');
             return;
         }
 
@@ -72,7 +72,7 @@ export class UsersService {
         });
 
         await this.usersRepository.save(admin);
-        this.logger.debug('Admin initializing complete');
+        this.logger.log('Admin initializing complete');
     }
 
     public async createEditor(): Promise<void> {
@@ -84,7 +84,7 @@ export class UsersService {
         });
         if (editorExists) {
             this.logger.debug(`Editor with email<${email}> already exists`);
-            this.logger.debug('Editor initializing skipped');
+            this.logger.log('Editor initializing skipped');
             return;
         }
 
@@ -103,7 +103,7 @@ export class UsersService {
         });
 
         await editor.save();
-        this.logger.debug('Editor initializing complete');
+        this.logger.log('Editor initializing complete');
     }
 
     public saveUser(user: UserEntity): Promise<UserEntity> {
