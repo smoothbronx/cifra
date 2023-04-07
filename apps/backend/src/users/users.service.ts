@@ -110,6 +110,7 @@ export class UsersService {
         return this.usersRepository.save(user);
     }
 
+    // TODO: Возможность оставлять поле course пустым
     public async createUser(
         initiator: UserEntity,
         credentials: UserCreatingDto,
@@ -162,40 +163,29 @@ export class UsersService {
         });
 
         if ([Role.USER, Role.HEAD].includes(credentials.role)) {
-            if (!credentials.branch) {
-                this.logger.error('Failed to create user. Reason:');
-                throw new BadRequestException(
-                    errorReasons.branch.mustBeDefined,
-                );
-            }
+            if (!credentials.branch)
+                this.creatingErrorWithReason(errorReasons.branch.mustBeDefined);
+
             const branch = await this.branchesRepository.findOneBy(
                 credentials.branch,
             );
 
-            if (!branch) {
-                this.logger.error('Failed to create user. Reason:');
-                throw new BadRequestException(errorReasons.branch.notFound);
-            }
+            if (!branch)
+                this.creatingErrorWithReason(errorReasons.branch.notFound);
 
             user.branch = branch;
         }
 
         if (credentials.role === Role.USER) {
-            if (!credentials.course) {
-                this.logger.error('Failed to create user. Reason:');
-                throw new BadRequestException(
-                    errorReasons.course.mustBeDefined,
-                );
-            }
+            if (!credentials.course)
+                this.creatingErrorWithReason(errorReasons.course.mustBeDefined);
 
             const course = await this.coursesRepository.findOneBy(
                 credentials.course,
             );
 
-            if (!course) {
-                this.logger.error('Failed to create user. Reason:');
-                throw new BadRequestException(errorReasons.course.notFound);
-            }
+            if (!course)
+                this.creatingErrorWithReason(errorReasons.course.notFound);
 
             user.course = course;
             await user.save();
@@ -203,6 +193,11 @@ export class UsersService {
         }
 
         return user.save();
+    }
+
+    private creatingErrorWithReason(reason: string): never {
+        this.logger.error(`Failed to create user. Reason: ${reason}`);
+        throw new BadRequestException(reason);
     }
 
     private validatePayload(
