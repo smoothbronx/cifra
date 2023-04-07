@@ -141,16 +141,18 @@ export class UsersService {
 
         const nameSegments = this.splitFullname(credentials.fullname);
 
-        const newUser = this.usersRepository.create({
-            ...credentials,
-            ...nameSegments,
-            course,
-            branch,
-            post,
-        });
+        const newUser = await this.usersRepository
+            .create({
+                ...credentials,
+                ...nameSegments,
+                course,
+                branch,
+                post,
+            })
+            .save();
 
         await this.availabilityService.getInitialAvailability(course, newUser);
-        return await this.usersRepository.save(newUser);
+        return newUser.save();
     }
 
     private validatePayload(
