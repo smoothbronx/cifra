@@ -5,7 +5,6 @@ import { UserEntity } from '@/users/user.entity';
 import { Role } from '@/shared/enums/Role.enum';
 import { Repository } from 'typeorm';
 import {
-    ForbiddenException,
     ConflictException,
     NotFoundException,
     Injectable,
@@ -34,11 +33,6 @@ export class CoursesService {
 
             return course;
         }
-
-        if (user.course?.id !== courseId) {
-            throw new ForbiddenException('Access to this course is denied');
-        }
-
         return user.course;
     }
 
@@ -48,6 +42,10 @@ export class CoursesService {
         }
 
         return user.course?.id === courseId;
+    }
+
+    public async courseExists(courseId: number): Promise<boolean> {
+        return this.coursesRepository.exist({ where: { id: courseId } });
     }
 
     public async deleteCourse(courseId: number) {

@@ -1,11 +1,12 @@
 import { CoursesService } from '@/courses/courses.service';
 import { UserEntity } from '@/users/user.entity';
 import {
+    ForbiddenException,
+    NotFoundException,
     ExecutionContext,
     CanActivate,
     Injectable,
     Inject,
-    NotFoundException,
 } from '@nestjs/common';
 
 @Injectable()
@@ -19,15 +20,32 @@ export class CourseAccessGuard implements CanActivate {
         return this.validate(context);
     }
 
-    private async validate(context: ExecutionContext): Promise<boolean> {
+    private validate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
 
         const user = request.user as UserEntity;
-        const { cid: courseId } = request.params;
+        const courseId = Number(request.params.courseId);
 
-        if (!this.coursesService.userHasAccessToCourse(user, courseId)) {
+        return this.checkUserAccess(user, courseId);
+    }
+
+    private async checkUserAccess(
+        user: UserEntity,
+        courseId: number,
+    ): Promise<boolean> {
+        const courseExists = await this.coursesService.courseExists(courseId);
+        if (!courseExists) {
             throw new NotFoundException('Course not found');
         }
+
+        const userHasAccess = this.coursesService.userHasAccessToCourse(
+            user,
+            courseId,
+        );
+        if (!userHasAccess) {
+            throw new ForbiddenException('Access to this course is denied');
+        }
+
         return true;
     }
 }

@@ -23,21 +23,21 @@ export class AvailabilityEntity extends BaseEntity {
     public user: UserEntity;
 
     @JoinTable()
-    @ManyToMany(() => CardEntity, (card) => card.openedAt, {
+    @ManyToMany(() => CardEntity, (card) => card.openedIn, {
         eager: true,
         nullable: false,
     })
     public opened: CardEntity[];
 
     @JoinTable()
-    @ManyToMany(() => CardEntity, (card) => card.closedAt, {
+    @ManyToMany(() => CardEntity, (card) => card.closedIn, {
         eager: true,
         nullable: false,
     })
     public closed: CardEntity[];
 
     @JoinTable()
-    @ManyToMany(() => CardEntity, (card) => card.finishedAt, {
+    @ManyToMany(() => CardEntity, (card) => card.finishedIn, {
         eager: true,
         nullable: false,
     })

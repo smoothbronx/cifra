@@ -8,40 +8,40 @@ import { RelationEntity } from '@/cards/entities/relation.entity';
 import { AuthUser } from '@/shared/decorators/authUser.decorator';
 import { CardStatusEnum } from '@/shared/enums/cardStatus.enum';
 import { Course } from '@/shared/decorators/course.decorator';
+import { CardDto, CardUpdateDto } from '@/cards/dto/card.dto';
 import { CourseEntity } from '@/courses/course.entity';
 import { RelationDto } from '@/cards/dto/relation.dto';
 import { JwtAuthGuard } from '@/shared/jwt/jwt.guard';
 import { CardsService } from '@/cards/cards.service';
 import { UserEntity } from '@/users/user.entity';
 import { Role } from '@/shared/enums/Role.enum';
-import { CardDto, CardUpdateDto } from '@/cards/dto/card.dto';
 import {
     BadRequestException,
-    Body,
-    ConflictException,
-    Controller,
-    Delete,
     ForbiddenException,
-    Get,
-    HttpCode,
-    Inject,
+    ConflictException,
     NotFoundException,
+    UseInterceptors,
+    Controller,
+    UseGuards,
+    HttpCode,
+    Delete,
+    Inject,
     Param,
     Patch,
+    Body,
     Post,
-    UseGuards,
-    UseInterceptors,
+    Get,
 } from '@nestjs/common';
 import {
-    ApiBearerAuth,
-    ApiBody,
-    ApiCreatedResponse,
-    ApiHeader,
-    ApiNoContentResponse,
-    ApiOkResponse,
-    ApiParam,
-    ApiTags,
     ApiUnauthorizedResponse,
+    ApiNoContentResponse,
+    ApiCreatedResponse,
+    ApiBearerAuth,
+    ApiOkResponse,
+    ApiHeader,
+    ApiParam,
+    ApiBody,
+    ApiTags,
 } from '@nestjs/swagger';
 
 @ApiHeader({
@@ -58,7 +58,7 @@ import {
 @AcceptRoles()
 @UseGuards(JwtAuthGuard, CourseAccessGuard)
 @UseInterceptors(CourseInterceptor)
-@Controller('courses/:cid/cards/')
+@Controller('courses/:courseId/cards/')
 export class CardsController {
     constructor(
         @Inject(CardsService)
@@ -76,7 +76,7 @@ export class CardsController {
         description: 'Course not found',
     })
     @ApiParam({
-        name: 'cid',
+        name: 'courseId',
         description: 'Course ID',
     })
     @Get('/relations/')
@@ -97,7 +97,7 @@ export class CardsController {
         description: 'Course not found',
     })
     @ApiParam({
-        name: 'cid',
+        name: 'courseId',
         description: 'Course ID',
     })
     @Get('/relations/:id/')
@@ -132,7 +132,7 @@ export class CardsController {
         description: 'Course not found',
     })
     @ApiParam({
-        name: 'cid',
+        name: 'courseId',
         description: 'Course ID',
     })
     @AcceptRoles(Role.ADMIN, Role.EDITOR)
@@ -160,7 +160,7 @@ export class CardsController {
         description: 'Course not found',
     })
     @ApiParam({
-        name: 'cid',
+        name: 'courseId',
         description: 'Course ID',
     })
     @AcceptRoles(Role.ADMIN, Role.EDITOR)
@@ -182,7 +182,7 @@ export class CardsController {
         description: 'Course not found',
     })
     @ApiParam({
-        name: 'cid',
+        name: 'courseId',
         description: 'Course ID',
     })
     @Get('/')
@@ -211,7 +211,7 @@ export class CardsController {
         description: 'Course not found',
     })
     @ApiParam({
-        name: 'cid',
+        name: 'courseId',
         description: 'Course ID',
     })
     @Get('/:id/')
@@ -244,7 +244,7 @@ export class CardsController {
         description: 'Course not found',
     })
     @ApiParam({
-        name: 'cid',
+        name: 'courseId',
         description: 'Course ID',
     })
     @AcceptRoles(Role.ADMIN, Role.EDITOR)
@@ -265,7 +265,7 @@ export class CardsController {
         description: 'Card not found',
     })
     @ApiParam({
-        name: 'cid',
+        name: 'courseId',
         description: 'Course ID',
     })
     @HttpCode(204)
@@ -294,7 +294,7 @@ export class CardsController {
         description: 'Course not found',
     })
     @ApiParam({
-        name: 'cid',
+        name: 'courseId',
         description: 'Course ID',
     })
     @AcceptRoles(Role.ADMIN, Role.EDITOR)
@@ -322,7 +322,7 @@ export class CardsController {
         description: 'Course not found',
     })
     @ApiParam({
-        name: 'cid',
+        name: 'courseId',
         description: 'Course ID',
     })
     @HttpCode(201)

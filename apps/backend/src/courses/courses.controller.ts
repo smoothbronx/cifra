@@ -1,5 +1,6 @@
 import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
 import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
+import { CourseAccessGuard } from '@/shared/guards/courseAccess.guard';
 import { AcceptRoles } from '@/shared/access/acceptRoles.decorator';
 import { AuthUser } from '@/shared/decorators/authUser.decorator';
 import { CoursesService } from '@/courses/courses.service';
@@ -46,7 +47,7 @@ import {
 })
 @ApiTags('courses')
 @AcceptRoles()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, CourseAccessGuard)
 @Controller('courses')
 export class CoursesController {
     constructor(private readonly coursesService: CoursesService) {}
@@ -64,10 +65,10 @@ export class CoursesController {
             description: 'This course is not available to the current user',
         },
     )
-    @Get('/:id/')
+    @Get('/:courseId/')
     public getCourse(
         @AuthUser() user: UserEntity,
-        @Param('id', ParseIntPipe) courseId: number,
+        @Param('courseId', ParseIntPipe) courseId: number,
     ) {
         return this.coursesService.getCourse(user, courseId);
     }
@@ -124,8 +125,8 @@ export class CoursesController {
     @ApiException(() => new NotFoundException('Course not found'))
     @AcceptRoles(Role.ADMIN)
     @HttpCode(204)
-    @Delete('/:id/')
-    public deleteCourse(@Param('id', ParseIntPipe) courseId: number) {
+    @Delete('/:courseId/')
+    public deleteCourse(@Param('courseId', ParseIntPipe) courseId: number) {
         return this.coursesService.deleteCourse(courseId);
     }
 
@@ -148,9 +149,9 @@ export class CoursesController {
     })
     @AcceptRoles(Role.ADMIN)
     @HttpCode(204)
-    @Patch('/:id/')
+    @Patch('/:courseId/')
     public updateCourse(
-        @Param('id', ParseIntPipe) courseId: number,
+        @Param('courseId', ParseIntPipe) courseId: number,
         @Body() courseDto: CourseDto,
     ): Promise<void> {
         return this.coursesService.updateCourse(courseId, courseDto);

@@ -1,24 +1,24 @@
 import { AvailabilityService } from '@/availability/availability.service';
 import { RelationEntity } from '@/cards/entities/relation.entity';
 import { CardStatusEnum } from '@/shared/enums/cardStatus.enum';
+import { CardDto, CardUpdateDto } from '@/cards/dto/card.dto';
 import { CardEntity } from '@/cards/entities/card.entity';
 import { RelationDto } from '@/cards/dto/relation.dto';
+import { CourseEntity } from '@/courses/course.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '@/users/user.entity';
-import { CardDto, CardUpdateDto } from '@/cards/dto/card.dto';
 import { Repository } from 'typeorm';
 import { v4 as uuid4 } from 'uuid';
 import {
+    MethodNotAllowedException,
     BadRequestException,
     ConflictException,
-    forwardRef,
-    HttpException,
-    Inject,
-    Injectable,
-    MethodNotAllowedException,
     NotFoundException,
+    HttpException,
+    forwardRef,
+    Injectable,
+    Inject,
 } from '@nestjs/common';
-import { CourseEntity } from '@/courses/course.entity';
 
 @Injectable()
 export class CardsService {
@@ -32,8 +32,13 @@ export class CardsService {
     ) {}
 
     public getCards(course: CourseEntity): Promise<CardEntity[]> {
-        return this.cardsRepository.findBy({
-            course: { id: course.id },
+        return this.cardsRepository.find({
+            where: {
+                course: { id: course.id },
+            },
+            order: {
+                createdAt: 'ASC',
+            },
         });
     }
 
