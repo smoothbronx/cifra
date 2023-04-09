@@ -1,20 +1,28 @@
-import { FileInterceptor } from '@nestjs/platform-express';
+import { AcceptRoles } from '@/shared/access/acceptRoles.decorator';
 import { FileTypeEnum } from '@/static/enums/fileType.enum';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { StaticService } from '@/static/static.service';
+import { JwtAuthGuard } from '@/shared/jwt/jwt.guard';
 import { Express, Request, Response } from 'express';
+import { Role } from '@/shared/enums/Role.enum';
+import { ApiTags } from '@nestjs/swagger';
 import {
     UseInterceptors,
     UploadedFile,
     Controller,
+    UseGuards,
     Inject,
+    Param,
     Body,
     Post,
     Req,
     Get,
-    Param,
     Res,
 } from '@nestjs/common';
 
+@ApiTags('static')
+@AcceptRoles()
+@UseGuards(JwtAuthGuard)
 @Controller('/static/')
 export class StaticController {
     constructor(
@@ -22,6 +30,7 @@ export class StaticController {
         private readonly staticService: StaticService,
     ) {}
 
+    @AcceptRoles(Role.EDITOR, Role.ADMIN)
     @UseInterceptors(FileInterceptor('file'))
     @Post('/')
     public uploadFile(

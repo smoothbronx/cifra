@@ -12,7 +12,7 @@ const dynamicTypeOrmModule = TypeOrmModule.forFeature([PostEntity]);
 @UseGuards(JwtAuthGuard)
 @Module({
     imports: [dynamicTypeOrmModule, forwardRef(() => UsersModule)],
-    providers: [PostsService, JwtStrategy],
+    providers: [PostsService, JwtAuthGuard, JwtStrategy],
     controllers: [PostsController],
     exports: [dynamicTypeOrmModule, PostsService],
 })

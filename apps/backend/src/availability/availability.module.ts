@@ -1,5 +1,6 @@
 import { AvailabilityService } from '@/availability/availability.service';
 import { AvailabilityEntity } from '@/availability/availability.entity';
+import { JwtAuthGuard } from '@/shared/jwt/jwt.guard';
 import { forwardRef, Module } from '@nestjs/common';
 import { UsersModule } from '@/users/users.module';
 import { CardsModule } from '@/cards/cards.module';
@@ -13,7 +14,7 @@ const dynamicTypeOrmModule = TypeOrmModule.forFeature([AvailabilityEntity]);
         forwardRef(() => UsersModule),
         forwardRef(() => CardsModule),
     ],
-    providers: [AvailabilityService],
+    providers: [AvailabilityService, JwtAuthGuard],
     exports: [dynamicTypeOrmModule, AvailabilityService],
 })
 export class AvailabilityModule {}

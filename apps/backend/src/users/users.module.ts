@@ -2,6 +2,7 @@ import { AvailabilityModule } from '@/availability/availability.module';
 import { BranchesModule } from '@/branches/branches.module';
 import { UsersController } from '@/users/users.controller';
 import { CoursesModule } from '@/courses/courses.module';
+import { JwtAuthGuard } from '@/shared/jwt/jwt.guard';
 import { UsersService } from '@/users/users.service';
 import { forwardRef, Module } from '@nestjs/common';
 import { PostsModule } from '@/posts/posts.module';
@@ -19,7 +20,7 @@ const dynamicTypeOrmModule = TypeOrmModule.forFeature([UserEntity]);
         forwardRef(() => CoursesModule),
     ],
     controllers: [UsersController],
-    providers: [UsersService],
+    providers: [UsersService, JwtAuthGuard],
     exports: [dynamicTypeOrmModule, UsersService],
 })
 export class UsersModule {}

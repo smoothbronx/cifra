@@ -1,15 +1,17 @@
 import { InvalidJwtExceptionSchema } from '@/swagger/schemas/invalidJwtException.schema';
 import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
 import { AcceptRoles } from '@/shared/access/acceptRoles.decorator';
+import { JwtAuthGuard } from '@/shared/jwt/jwt.guard';
 import { PostsService } from '@/posts/posts.service';
 import { PostEntity } from '@/posts/post.entity';
 import { Role } from '@/shared/enums/Role.enum';
 import { PostDto } from '@/posts/post.dto';
 import {
-    NotFoundException,
     ConflictException,
+    NotFoundException,
     ParseIntPipe,
     Controller,
+    UseGuards,
     HttpCode,
     Delete,
     Inject,
@@ -40,6 +42,8 @@ import {
     description: 'Invalid access token',
     type: InvalidJwtExceptionSchema,
 })
+@AcceptRoles(Role.ADMIN)
+@UseGuards(JwtAuthGuard)
 @Controller('/posts/')
 export class PostsController {
     constructor(

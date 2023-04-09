@@ -3,13 +3,16 @@ import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator
 import { AcceptRoles } from '@/shared/access/acceptRoles.decorator';
 import { BranchesService } from '@/branches/branches.service';
 import { BranchEntity } from '@/branches/branch.entity';
+import { JwtAuthGuard } from '@/shared/jwt/jwt.guard';
 import { BranchDto } from '@/branches/branch.dto';
 import { Role } from '@/shared/enums/Role.enum';
 import {
+    ForbiddenException,
     NotFoundException,
     ConflictException,
     ParseIntPipe,
     Controller,
+    UseGuards,
     HttpCode,
     Inject,
     Delete,
@@ -18,7 +21,6 @@ import {
     Body,
     Post,
     Get,
-    ForbiddenException,
 } from '@nestjs/common';
 import {
     ApiUnauthorizedResponse,
@@ -41,6 +43,8 @@ import {
     description: 'Invalid access token',
     type: InvalidJwtExceptionSchema,
 })
+@AcceptRoles(Role.ADMIN)
+@UseGuards(JwtAuthGuard)
 @Controller('/branches/')
 export class BranchesController {
     constructor(

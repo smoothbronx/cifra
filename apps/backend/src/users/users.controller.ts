@@ -21,6 +21,7 @@ import {
 import {
     MethodNotAllowedException,
     BadRequestException,
+    ForbiddenException,
     ConflictException,
     NotFoundException,
     ParseIntPipe,
@@ -33,7 +34,6 @@ import {
     Body,
     Post,
     Get,
-    ForbiddenException,
 } from '@nestjs/common';
 
 @ApiHeader({
