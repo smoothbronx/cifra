@@ -5,6 +5,7 @@ import { swaggerConfig } from '@/swagger/swagger.config';
 import { SwaggerModule } from '@nestjs/swagger';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { UserActivityInterceptor } from '@/shared/interceptors/userActivity.interceptor';
 
 async function bootstrap() {
     const application = await NestFactory.create(AppModule);
@@ -12,7 +13,10 @@ async function bootstrap() {
     application.setGlobalPrefix('/api/');
     enableSwagger(application, 'api/docs');
 
-    application.useGlobalInterceptors(new TransformInterceptor());
+    application.useGlobalInterceptors(
+        new TransformInterceptor(),
+        new UserActivityInterceptor(),
+    );
     application.useGlobalPipes(
         new ValidationPipe({
             transform: true,

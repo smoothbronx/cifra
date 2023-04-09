@@ -58,11 +58,11 @@ export class UserEntity extends BaseEntity {
     @CreateDateColumn({
         nullable: false,
         name: 'created_at',
-        type: 'timestamp',
+        type: 'timestamptz',
     })
     public createdAt: Date;
 
-    @Column({ type: 'timestamp', nullable: true, name: 'last_entry' })
+    @Column({ type: 'timestamptz', nullable: true, name: 'last_entry' })
     public lastEntry: Date;
 
     @JoinColumn({ name: 'course_id' })

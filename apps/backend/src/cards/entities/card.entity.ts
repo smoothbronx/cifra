@@ -60,14 +60,14 @@ export class CardEntity extends BaseEntity {
     @CreateDateColumn({
         nullable: false,
         name: 'created_at',
-        type: 'timestamp',
+        type: 'timestamptz',
     })
     public readonly createdAt: Date;
 
     @UpdateDateColumn({
         nullable: false,
         name: 'updated_at',
-        type: 'timestamp',
+        type: 'timestamptz',
     })
     public readonly updatedAt: Date;
 
