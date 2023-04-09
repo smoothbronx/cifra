@@ -27,7 +27,7 @@ export class CourseInterceptor implements NestInterceptor {
 
     public async setCourseToRequest(request: any): Promise<void> {
         const user = request.user;
-        const { cid: courseId } = request.params;
+        const { courseId } = request.params;
 
         request.course = this.coursesService.getCourse(user, courseId);
     }
