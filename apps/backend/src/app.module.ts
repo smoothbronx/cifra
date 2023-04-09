@@ -5,7 +5,10 @@ import { BranchesService } from '@/branches/branches.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BranchesModule } from '@/branches/branches.module';
 import { CardEntity } from '@/cards/entities/card.entity';
+import { CoursesModule } from '@/courses/courses.module';
 import { BranchEntity } from '@/branches/branch.entity';
+import { CourseEntity } from '@/courses/course.entity';
+import { StaticModule } from '@/static/static.module';
 import { UsersService } from '@/users/users.service';
 import { PostsService } from '@/posts/posts.service';
 import { CardsModule } from '@/cards/cards.module';
@@ -18,8 +21,6 @@ import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import * as Joi from 'joi';
-import { CourseEntity } from '@/courses/course.entity';
-import { CoursesModule } from '@/courses/courses.module';
 
 @Module({
     imports: [
@@ -67,6 +68,7 @@ import { CoursesModule } from '@/courses/courses.module';
         AvailabilityModule,
         BranchesModule,
         CoursesModule,
+        StaticModule,
         CardsModule,
         PostsModule,
         UsersModule,

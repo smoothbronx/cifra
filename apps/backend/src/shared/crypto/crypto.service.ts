@@ -15,7 +15,14 @@ export class CryptoService {
         return bcrypt.hashSync(password, bcrypt.genSaltSync());
     }
 
-    public static generateUuid() {
-        return uuid4();
+    public generateUuid(options: { segments: number; split: boolean }) {
+        if (options.segments > 4 || options.segments < 1) {
+            throw new Error('Incorrect segments value');
+        }
+
+        const segments: string[] = uuid4().split('-');
+        const slicedSegments = segments.slice(0, options.segments + 1);
+
+        return slicedSegments.join(options.split ? '-' : '');
     }
 }

@@ -8,8 +8,8 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
     const application = await NestFactory.create(AppModule);
-    application.setGlobalPrefix('/api/');
 
+    application.setGlobalPrefix('/api/');
     enableSwagger(application, 'api/docs');
 
     application.useGlobalInterceptors(new TransformInterceptor());

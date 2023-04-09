@@ -47,7 +47,7 @@ import {
 })
 @ApiTags('courses')
 @AcceptRoles()
-@UseGuards(JwtAuthGuard, CourseAccessGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('courses')
 export class CoursesController {
     constructor(private readonly coursesService: CoursesService) {}
@@ -65,6 +65,7 @@ export class CoursesController {
             description: 'This course is not available to the current user',
         },
     )
+    @UseGuards(CourseAccessGuard)
     @Get('/:courseId/')
     public getCourse(
         @AuthUser() user: UserEntity,
@@ -124,6 +125,7 @@ export class CoursesController {
     )
     @ApiException(() => new NotFoundException('Course not found'))
     @AcceptRoles(Role.ADMIN)
+    @UseGuards(CourseAccessGuard)
     @HttpCode(204)
     @Delete('/:courseId/')
     public deleteCourse(@Param('courseId', ParseIntPipe) courseId: number) {
@@ -149,6 +151,7 @@ export class CoursesController {
     })
     @AcceptRoles(Role.ADMIN)
     @HttpCode(204)
+    @UseGuards(CourseAccessGuard)
     @Patch('/:courseId/')
     public updateCourse(
         @Param('courseId', ParseIntPipe) courseId: number,
