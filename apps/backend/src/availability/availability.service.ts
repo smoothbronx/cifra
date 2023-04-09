@@ -12,8 +12,8 @@ import { Repository } from 'typeorm';
 import {
     BadRequestException,
     forwardRef,
-    Injectable,
     Inject,
+    Injectable,
 } from '@nestjs/common';
 
 @Injectable()
@@ -232,7 +232,7 @@ export class AvailabilityService {
         options: { isFirst: boolean },
     ): Promise<void> {
         // Пользователям роли редактора и админа доступны все карты
-        if ([Role.EDITOR, Role.ADMIN].includes(user.role)) {
+        if (user.role !== Role.USER) {
             return;
         }
 
