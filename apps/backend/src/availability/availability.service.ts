@@ -12,8 +12,8 @@ import { Repository } from 'typeorm';
 import {
     BadRequestException,
     forwardRef,
-    Inject,
     Injectable,
+    Inject,
 } from '@nestjs/common';
 
 @Injectable()

@@ -1,8 +1,10 @@
 import { AvailabilityEntity } from '@/availability/availability.entity';
 import { BranchEntity } from '@/branches/branch.entity';
+import { UserStatisticDto } from '@/users/dto/user.dto';
+import { CourseEntity } from '@/courses/course.entity';
+import { Exclude, Expose } from 'class-transformer';
 import { PostEntity } from '@/posts/post.entity';
 import { Role } from '@/shared/enums/Role.enum';
-import { Exclude } from 'class-transformer';
 import {
     PrimaryGeneratedColumn,
     CreateDateColumn,
@@ -13,7 +15,6 @@ import {
     Column,
     Entity,
 } from 'typeorm';
-import { CourseEntity } from '@/courses/course.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity extends BaseEntity {
@@ -87,6 +88,15 @@ export class UserEntity extends BaseEntity {
         nullable: true,
     })
     public cards: AvailabilityEntity;
+
+    @Expose({ name: 'statistic', toPlainOnly: true })
+    public getUserStatistic(): UserStatisticDto | undefined {
+        if (this.role !== Role.USER) {
+            return undefined;
+        }
+
+        return this.cards.getStatistic();
+    }
 
     @Exclude({ toPlainOnly: true })
     public getFullName(): string {

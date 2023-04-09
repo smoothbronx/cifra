@@ -10,9 +10,35 @@ import {
     MinLength,
     IsString,
     Matches,
-    IsEnum,
     IsEmail,
+    IsEnum,
 } from 'class-validator';
+
+export class UserStatisticDto {
+    @ApiProperty({
+        name: 'progressPercent',
+        required: true,
+        readOnly: true,
+        example: 65,
+    })
+    public progressPercent: number;
+
+    @ApiProperty({
+        name: 'cardsPassed',
+        required: true,
+        readOnly: true,
+        example: 13,
+    })
+    public cardsPassed: number;
+
+    @ApiProperty({
+        name: 'allCards',
+        required: true,
+        readOnly: true,
+        example: 20,
+    })
+    public allCards: number;
+}
 
 export class UserDto {
     @ApiProperty({
@@ -112,6 +138,13 @@ export class UserDto {
         example: 'P@ssw0rd',
     })
     public password;
+
+    @ApiProperty({
+        name: 'statistic',
+        required: false,
+        readOnly: true,
+    })
+    public statistic: UserStatisticDto;
 }
 
 export class UserCreatingDto {

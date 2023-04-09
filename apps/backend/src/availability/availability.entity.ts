@@ -1,6 +1,8 @@
 import { CardEntity } from '@/cards/entities/card.entity';
+import { UserStatisticDto } from '@/users/dto/user.dto';
 import { CourseEntity } from '@/courses/course.entity';
 import { UserEntity } from '@/users/user.entity';
+import { Exclude } from 'class-transformer';
 import {
     PrimaryGeneratedColumn,
     BaseEntity,
@@ -49,4 +51,21 @@ export class AvailabilityEntity extends BaseEntity {
         nullable: false,
     })
     public course: Promise<CourseEntity>;
+
+    @Exclude({ toPlainOnly: true })
+    public getTotalCards(): CardEntity[] {
+        return [...this.opened, ...this.closed, ...this.finished];
+    }
+
+    @Exclude({ toPlainOnly: true })
+    public getStatistic(): UserStatisticDto {
+        const allCards = this.getTotalCards().length;
+        const cardsPassed = this.finished.length;
+
+        return {
+            allCards,
+            cardsPassed,
+            progressPercent: Math.round(allCards / cardsPassed) | 0,
+        };
+    }
 }
