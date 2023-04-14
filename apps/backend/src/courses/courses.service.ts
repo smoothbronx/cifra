@@ -49,15 +49,18 @@ export class CoursesService {
     }
 
     public async deleteCourse(courseId: number) {
-        const courseExists = await this.coursesRepository.exist({
+        const course = await this.coursesRepository.findOne({
             where: { id: courseId },
         });
 
-        if (!courseExists) {
+        if (!course) {
             throw new NotFoundException('Course not found');
         }
 
-        await this.coursesRepository.delete({ id: courseId });
+        course.cards.map((card) => card.remove());
+        course.relations.map((relation) => relation.remove());
+
+        await course.remove();
     }
 
     public async createCourse(courseDto: CourseDto): Promise<CourseEntity> {

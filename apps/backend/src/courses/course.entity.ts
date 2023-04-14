@@ -32,6 +32,8 @@ export class CourseEntity extends BaseEntity {
     @OneToMany(() => CardEntity, (card) => card.course, {
         eager: true,
         cascade: true,
+        nullable: false,
+        onDelete: 'CASCADE',
     })
     public cards: CardEntity[];
 
@@ -42,6 +44,8 @@ export class CourseEntity extends BaseEntity {
         {
             eager: true,
             cascade: true,
+            nullable: false,
+            onDelete: 'CASCADE',
         },
     )
     public availabilities: AvailabilityEntity[];
@@ -49,7 +53,9 @@ export class CourseEntity extends BaseEntity {
     @Exclude({ toPlainOnly: true })
     @OneToMany(() => RelationEntity, (relation) => relation.course, {
         eager: true,
+        cascade: true,
         nullable: false,
+        onDelete: 'CASCADE',
     })
     public relations: RelationEntity[];
 }
