@@ -23,7 +23,7 @@ export class StaticService {
         @Inject(ConfigService)
         private readonly configService: ConfigService,
     ) {
-        this.staticDirectory = join(__dirname, '../../../../static/');
+        this.staticDirectory = join(__dirname, '../../static/');
         this.staticPath = this.configService.getOrThrow('STATIC_PATH');
     }
 

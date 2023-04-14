@@ -1,0 +1,12 @@
+services:
+    backend:
+        build:
+            context: .
+            dockerfile: dev.Dockerfile
+        container_name: integration-backend
+        env_file:
+            - ../../.env
+        ports:
+            - ${BACKEND_PORT}:${BACKEND_PORT}
+        volumes:
+            - ../../static:/user/src/integration/backend/static

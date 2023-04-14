@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+    backend:
+        extends:
+            file: apps/backend/docker-compose.yml
+            service: backend
+        restart: unless-stopped
+        depends_on:
+            - postgres
+        networks:
+            - database
+
+    postgres:
+        extends:
+            file: ./apps/database/docker-compose.yml
+            service: postgres
+        restart: unless-stopped
+        networks:
+            - database
+
+    pgAdmin:
+        extends:
+            file: ./apps/database/docker-compose.yml
+            service: pgAdmin
+        restart: always
+        depends_on:
+            - postgres
+
+networks:
+    database:
