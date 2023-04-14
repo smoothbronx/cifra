@@ -14,8 +14,8 @@
         "start": "yarn start:database && yarn start:debug",
         "start:database": "yarn workspace @cifra/database start",
         "start:debug": "yarn workspace @cifra/backend start:debug",
-        "compose:dev:down": "docker compose -f docker-compose.yml --env-file ./.env down",
-        "compose:dev:up": "docker compose -f docker-compose.yml --env-file ./.env up --build --remove-orphans -d",
+        "compose:dev:down": "docker compose -f docker-compose.yml --env-file root/cifra/.env down",
+        "compose:dev:up": "docker compose -f docker-compose.yml --env-file root/cifra/.env up --build --remove-orphans -d",
         "compose:dev:restart": "yarn compose:dev:down && yarn compose:dev:up"
     }
 }
