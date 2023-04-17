@@ -54,7 +54,12 @@ export class AvailabilityEntity extends BaseEntity {
 
     @Exclude({ toPlainOnly: true })
     public getTotalCards(): CardEntity[] {
-        return [...this.opened, ...this.closed, ...this.finished];
+        // TODO: Убрать хардкод
+        return [
+            ...(this.opened || []),
+            ...(this.closed || []),
+            ...(this.finished || []),
+        ];
     }
 
     @Exclude({ toPlainOnly: true })
