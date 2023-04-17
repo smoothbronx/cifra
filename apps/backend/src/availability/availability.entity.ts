@@ -34,21 +34,21 @@ export class AvailabilityEntity extends BaseEntity {
     @JoinTable()
     @ManyToMany(() => CardEntity, (card) => card.closedIn, {
         eager: true,
-        nullable: false,
+        nullable: true,
     })
     public closed: CardEntity[];
 
     @JoinTable()
     @ManyToMany(() => CardEntity, (card) => card.finishedIn, {
         eager: true,
-        nullable: false,
+        nullable: true,
     })
     public finished: CardEntity[];
 
     @JoinColumn({ name: 'course_id' })
     @ManyToOne(() => CourseEntity, (course) => course.availabilities, {
         lazy: true,
-        nullable: false,
+        nullable: true,
     })
     public course: Promise<CourseEntity>;
 
