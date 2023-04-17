@@ -4,8 +4,6 @@ services:
             context: .
             dockerfile: dev.Dockerfile
         container_name: integration-backend
-        env_file:
-            - ../../.env
         ports:
             - ${BACKEND_PORT}:${BACKEND_PORT}
         volumes:

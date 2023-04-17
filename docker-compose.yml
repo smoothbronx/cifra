@@ -6,6 +6,8 @@ services:
             file: apps/backend/docker-compose.yml
             service: backend
         restart: unless-stopped
+        env_file:
+            - /root/cifra/.env
         depends_on:
             - postgres
         networks:
@@ -16,6 +18,8 @@ services:
             file: ./apps/database/docker-compose.yml
             service: postgres
         restart: unless-stopped
+        env_file:
+            - /root/cifra/.env
         networks:
             - database
 
