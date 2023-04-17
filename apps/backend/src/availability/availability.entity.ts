@@ -65,7 +65,8 @@ export class AvailabilityEntity extends BaseEntity {
     @Exclude({ toPlainOnly: true })
     public getStatistic(): UserStatisticDto {
         const allCards = this.getTotalCards().length;
-        const cardsPassed = this.finished.length;
+        // TODO: Пофиксить хардкод
+        const cardsPassed = (this.finished || []).length;
 
         return {
             allCards,
